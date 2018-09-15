@@ -3,3 +3,4 @@ node_modules/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+*.ipynb
