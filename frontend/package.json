@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "history": "^4.7.2",
+    "immutable": "^3.8.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-motion": "^0.5.2",
@@ -15,7 +16,9 @@
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.3.3",
-    "semantic-ui-react": "^0.82.2"
+    "semantic-ui-react": "^0.82.2",
+    "slate": "^0.40.2",
+    "slate-react": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

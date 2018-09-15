@@ -11,7 +11,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 const items = [
     { to: '/', name: 'home', content: 'Home'},
     { to: '/data', name: 'data', content: 'Data'},
-    { to: '/journal', name: 'journal', content: 'Permissions'},
+    { to: '/journal', name: 'journal', content: 'Journal'},
     { to: '/insights', name: 'insights', content: 'Insights'},
 ]
 
@@ -35,13 +35,14 @@ class HeaderBanner extends Component {
     }
 
     render() {
-        const { activeItem } = this.state
+        var currentLink = this.props.path
         let menuItems = items.map((item) => {
-            return <Menu.Item {...item} active={ activeItem === item.name } onClick={this.handleMenuItemClick} />
+            let active = currentLink === item.to
+            return <Menu.Item {...item} active={active} key={item.name} onClick={this.handleMenuItemClick} />
         })
         return (
             <Menu secondary pointing borderless size='huge' id='banner'>
-                {menuItems} 
+                {menuItems}
             </Menu>
         );
     }
