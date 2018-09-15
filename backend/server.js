@@ -48,6 +48,8 @@ app.get('/client/text/:id', (req, res) => {
 app.get('/client/blocks/:id', (req, res) => {
     // user sends hello ping, server sends back a block if there is data available
     // we'll use an id to differentiate entries for different days
+    createJsonBlock()
+    res.send({block: createJsonBlock()});
 })
 
 app.get('/client/fitbit/:id', (req, res) => {
@@ -69,6 +71,30 @@ function queryCloudVision() {
     // if has landmark, add to backend user tag dictionary
 
     //
+}
+
+function createJsonBlock(type) {
+    var type = 'heading'
+    var text = 'Your First Header'
+    return {
+        "document": {
+            "nodes": [
+                {
+                    "object": "block",
+                    "type": type,
+                    "nodes": [
+                        {
+                            "object": "text",
+                            "leaves": [
+                                {
+                                    "text": text
+                                }
+                            ]
+                        }
+                    ]
+            }]
+        }
+    } 
 }
 
 // im2txt
