@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import { Button, Segment, Image, Card, Divider } from 'semantic-ui-react'
+import { Button, Segment, Image, Card, Header, Divider } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import { bindActionCreators } from 'redux'
+
+import fitbit_logo from '../assets/fitbit_logo.png'
 
 import { Editor } from 'slate-react'
 
@@ -100,7 +102,7 @@ class Block extends Component {
                             <Card.Header></Card.Header>
                             <Card.Meta></Card.Meta>
                             <Divider />
-                            <Image src={hobbs} />
+                            <Image />
                         </Card.Content>
                         <Card.Content extra>
                             {'Tags: ' + emojis + ' Mood: ' + mood}
@@ -149,7 +151,7 @@ class Block extends Component {
     render() {
         const editorBottom = this.state.hasImage ? '45%' : '10%'
         return (
-            <div className="App-intro">
+            <div className="block">
                 <Segment basic style={{ border: 'none', paddingTop: '0px', paddingBottom: '0px', width: '80%', marginTop: '0%', marginLeft: '10%', marginRight: '10%' }}>
                     <Button basic circular style={{ marginTop: '5%' }} icon='ellipsis horizontal' floated='right' />
                     <Editor
@@ -158,7 +160,6 @@ class Block extends Component {
                         onChange={this.onChange}
                         onKeyDown={this.onKeyDown}
                         renderNode={this.renderNode}
-                        plugins={plugins}
                         schema={this.schema}
                         style={{ paddingBottom: editorBottom }}
                     />

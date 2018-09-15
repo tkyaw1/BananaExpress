@@ -50,6 +50,33 @@ body {
     border-radius: 4.5px;
 }
 
+.day-segment{
+    border: 2px !important;
+    width: 70% !important;
+    padding-top: 2% !important;
+    padding-bottom: 10% !important;
+    margin-top: 5% !important;
+    margin-left: 15% !important;
+    margin-right: 15% !important;
+}
+
+.block-loading {
+   margin-top: 10% !important;
+}
+
+
+.suggestions-box {
+    position: absolute !important;
+    display: inline-block;
+    border: 2px !important;
+    z-index: 1;
+    padding-bottom: 40% !important;
+    top: 20% !important; 
+    right: 2.5% !important;
+    width: 20% !important;
+    bottom: 50% !important;
+}
+
 
 #button1 {
     animation: fade-expand-in  6s;
