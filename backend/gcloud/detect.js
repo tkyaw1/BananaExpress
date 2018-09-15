@@ -14,7 +14,7 @@ let student = JSON.parse(rawdata);
 console.log(student);  
 console.log(student.car);  
 
-let student = {  
+let student2 = {
     name: 'Mike',
     age: 23, 
     gender: 'Male',
@@ -22,8 +22,8 @@ let student = {
     car: 'Honda' 
 };
 
-let data = JSON.stringify(student);  
-fs.writeFileSync('student-2.json', data); 
+let data = JSON.stringify(student2);  
+// fs.writeFileSync('student-2.json', data); 
 
 
 // fs.readFile('studentDemo.json', (err, data) => {  
@@ -35,6 +35,6 @@ fs.writeFileSync('student-2.json', data);
 
 
 
-// gCloud.faceDetection('../resources/sadEiffel.jpg');
-// gCloud.labelDetection('../resources/sadEiffel.jpg');
-// gCloud.landmarkDetection('../resources/sadEiffel.jpg');
+gCloud.faceDetection('../resources/sadEiffel.jpg');
+gCloud.labelDetection('../resources/sadEiffel.jpg');
+gCloud.landmarkDetection('../resources/sadEiffel.jpg');
