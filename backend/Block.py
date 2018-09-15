@@ -1,5 +1,7 @@
 """ This is the class for blocks
 """
+import requests
+
 
 class Block:
     def __init__(self):
@@ -18,8 +20,20 @@ class Block:
     def get_photo(self):
         return self.photo
 
-    def set_keywords(self, keywords):
-        self.keywords = keywords # Need to make this actual keyword extraction
+    def set_keywords(self):
+        headers = {
+            'Ocp-Apim-Subscription-Key': '59bf3be460ad434585a4b4143c470a92',
+        }
+
+        document = {'documents': [
+            {'id': '1', 'text': self.text}
+        ]}
+
+        azure_url = "https://eastus.api.cognitive.microsoft.com/text/analytics/v2.0/KeyPhrases"
+
+        response = requests.post(azure_url, headers=headers, json=document)
+        response = response.json()
+        self.keywords = [keyword.encode('utf-8') for keyword in response['documents'][0]['keyPhrases']]
 
     def get_keywords(self):
         return self.keywords
