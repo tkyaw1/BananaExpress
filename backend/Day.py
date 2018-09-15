@@ -10,6 +10,24 @@ class Day:
         self.heading = "" # not too sure what will populate this
         self.keywords = []
 
+    def __str__(self):
+        return str({
+            "blocks": [block.return_json() for block in self.blocks],
+            "date": self.date,
+            "weather": self.weather,
+            "heading": self.heading,
+            "keywords": self.keywords
+        })
+
+    def return_day_json(self):
+        return str({
+            "blocks": [block.return_json() for block in self.blocks],
+            "date": self.date,
+            "weather": self.weather,
+            "heading": self.heading,
+            "keywords": self.keywords
+        })
+
     def add_block(self, block):
         """ Appends a block to the list of blocks
         """
