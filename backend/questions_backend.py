@@ -18,14 +18,14 @@ class QuestionGeneration(object):
     def askLocationQ(self, location):
         return random.choice(["What did you do in %s?" %location,
         "Why did you go to %s?" %location,
-        "What did eat in %s?" %location,
+        "What did you eat in %s?" %location,
         "Who did you meet in %s?" %location,
         "First time in %s?" %location,
-        "Have you ever been to %s?" %location])
+        "Have you ever been to %s before?" %location])
 
     def askActivityQ(self, activity):
         return random.choice(["How did %s go?" %activity,
-        "Can you tell me more about %s?" %activity,
+        "Can you tell me more about your %s experience?" %activity,
         "Was %s fun?" %activity])
 
     def askFoodQ(self, food):
