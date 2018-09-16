@@ -57,8 +57,10 @@ class QuestionGeneration(object):
 # {'type': 'imagePrompt', 'data': imagePrompt},
 def main():
     # load data from front end
-    photo_url = sys.argv[1]
-    keyword_dict_str = sys.argv[2]
+    # photo_url = sys.argv[1]
+    photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
+    # keyword_dict_str = sys.argv[2]
+
 
     photo_name = str(random.uniform(0, 9999)) + ".jpg"
     loc_photo_path = "./fromFrontEnd/" + photo_name
@@ -87,15 +89,15 @@ def main():
 
     d = {}
     tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
-    for word in labels[:5]:
-        tokenizeAndPopulateDict(word, d)
+    for word in labels_list[:5]:
+        tokenizeAndPopulateDict(word, d, address_nl, date_str, group_bool)
 
 
 def captionImage(url):
     image_url = url
     cBot = CaptionBot()
-    # caption = cBot.url_caption(image_url)
-    caption = cBot.file_caption(filePath)
+    caption = cBot.url_caption(image_url)
+    # caption = cBot.file_caption(filePath)
     caption = caption.split(" ")[2:]
     caption = " ".join(caption)
     return caption
@@ -109,6 +111,7 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
     for word in tagged:
         keyword = word[0]
         pos = word[1]
+        
         locationAndDate=None
         if location != None and date != None:
             locationAndDate = [location, date]
@@ -132,15 +135,14 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
 
 def askQs(location=None, activity=None, food=None, group=None):
     qG = questions.QuestionGeneration()
-    if location == True or activity == True or food == True or group == True:
-        if location:
-            print({'type': 'imagePrompt', 'data': qG.askLocationQ(location)})
-        if group:
-            print({'type': 'imagePrompt', 'data': qG.askPeopleQ()})
-        if activity:
-            print({'type': 'imagePrompt', 'data': qG.askActivityQ(activity)})
-        if food:
-            print({'type': 'imagePrompt', 'data': qG.askFoodQ(food)})
+    if location:
+        print({'type': 'imagePrompt', 'data': qG.askLocationQ(location)})
+    elif group:
+        print({'type': 'imagePrompt', 'data': qG.askPeopleQ()})
+    elif activity:
+        print({'type': 'imagePrompt', 'data': qG.askActivityQ(activity)})
+    elif food:
+        print({'type': 'imagePrompt', 'data': qG.askFoodQ(food)})
     else:
         print({'type': 'imagePrompt', 'data': qG.askGeneralQ()})
 

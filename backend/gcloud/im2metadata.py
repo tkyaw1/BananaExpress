@@ -150,7 +150,7 @@ def pillowImageToAddress(image):
 
 def im2date_time_addr(photoPath):
     # GET THE ADDRESS
-    image = Image.open(photoPath) 
+    image = Image.open(photoPath)
     exif_data = get_exif_data(image)
     lat, lon = get_lat_lon(exif_data)
     address_nl = get_address(lat, lon)
@@ -165,8 +165,8 @@ def im2date_time_addr(photoPath):
         ampm = "PM"
     else:
         ampm = "AM"
-    time_12hr_str = (datetime_object.hour + ":" + datetime_object.minute + " " + ampm)
-        
+    time_12hr_str = (str(datetime_object.hour) + ":" + str(datetime_object.minute) + " " + ampm)
+
 
     return date_str, time_nl, time_12hr_str, address_nl
 
@@ -177,7 +177,7 @@ def im2date_time_addr(photoPath):
 """
 if __name__ == "__main__":
 
-    image = Image.open("../resources/cloudCity.jpg") 
+    image = Image.open("../resources/cloudCity.jpg")
     print(pillowImageToAddress(image))
     exif_data = get_exif_data(image)
     lat, lon = get_lat_lon(exif_data)
