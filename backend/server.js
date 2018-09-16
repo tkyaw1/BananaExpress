@@ -90,6 +90,8 @@ app.locals.dashboards = {
     }
 }
 
+app.locals.emojis = ['☀️', '☀️','☀️','☀️','☀️','☀️','🌤','🌤','🌤','⛅️','⛅️','⛅️', '🌥','🌦', '🌧', '⛈', '🌩','🌨','️☔️','☂️']
+
 app.locals.hasNewBlocks = true
 
 app.locals.prompts = {
@@ -138,14 +140,14 @@ app.get('/client/prompts/:id', (req, res) => {
     //     console.log(textChunk)
     // });
     let day = 'test'
-    if (req.params.id == 'reset') {
-        console.log('resetting prompts!!')
-        app.locals.prompts = {
-            'test': ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
-        }
-    }
+    // if (req.params.id == 'reset') {
+    //     console.log('resetting prompts!!')
+    //     app.locals.prompts = {
+    //         'test': ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
+    //     }
+    // }
     let prompts = app.locals.prompts[day]
-    // console.log(prompts)
+    console.log('sending prompts back', prompts)
     res.send({ prompts: prompts});
 })
 
@@ -171,8 +173,7 @@ app.post('/client/text/:id', (req, res) => {
         // console.log(mergedPrompts)
         req.app.locals.prompts[day] = [...new Set(mergedPrompts)]
         // var textChunk = data.toString('utf8');
-        console.log('updating prompts:', app.locals.prompts[day])
-        res.send({ prompts: newPrompts });
+        res.send({ prompts: app.locals.prompts[day] });
     });
     // console.log('new prompts: ', newPrompts);
 })
@@ -191,9 +192,19 @@ app.get('/client/blocks/:id', (req, res) => {
     app.locals.hasNewBlocks = false
     // console.log(hasNewBlocks)
     if (hasNewBlocks) {
-        res.send({ blocks: [createRockClimbingBlock()], hasNewBlocks: hasNewBlocks });
+        res.send({ blocks: [createRockClimbingBlock(), createFitbitBlock()], hasNewBlocks: hasNewBlocks });
         console.log('sent block back')
     }
+})
+
+app.get('/client/dashboard/:id', (req, res) => {
+    // user sends hello ping, server sends back a block if there is data available
+    // we'll use an id to differentiate entries for different days
+    // console.log('received block request!')
+
+    console.log('dashboard', app.locals.dashboards[req.params.id])
+    res.send({ dashboard: app.locals.dashboards[req.params.id]});
+    console.log('sent dashboard back')
 })
 
 app.get('/client/fitbit/:id', (req, res) => {
@@ -227,6 +238,20 @@ function createMiniBlockFromType(type, data) {
             ]
         }
     }
+}
+
+function createFitbitBlock() {
+    let timestamp = '2:30 pm ' + app.locals.emojis[Math.floor(Math.random() * app.locals.emojis.length)]
+    let caption = 'Afternoon Run'
+
+    let block = [
+        {'type': 'timestamp', 'data': timestamp}, 
+        {'type': 'caption', 'data': caption}, 
+        {'type': 'fitbit', 'data': ''}, 
+    ]
+
+    return createBlockFrom(block)
+
 }
 
 function createBlockFrom(block) {
