@@ -60,8 +60,9 @@ def main():
                 # questions.append(qqgen.askActivityQ(keyword_dict['activity']))
 
     # print keyword_dict['swim']
-    print questions
-    sys.stdout.flush()
+    for question in questions:
+        print(question)
+        sys.stdout.flush()
 
 if __name__ == '__main__':
     main()
