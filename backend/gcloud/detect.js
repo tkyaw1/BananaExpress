@@ -34,7 +34,7 @@ let data = JSON.stringify(student2);
 
 
 
-
 gCloud.faceDetection('../resources/sadEiffel.jpg');
 gCloud.labelDetection('../resources/sadEiffel.jpg');
 gCloud.landmarkDetection('../resources/sadEiffel.jpg');
+
