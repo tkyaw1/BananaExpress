@@ -161,8 +161,14 @@ def im2date_time_addr(photoPath):
     datetime_object = datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
     # print(datetime_object)
     time_nl = getTimeOfDay(datetime_object.hour)
+    if(datetime_object.hour >=12 ):
+        ampm = "PM"
+    else:
+        ampm = "AM"
+    time_12hr_str = (datetime_object.hour + ":" + datetime_object.minute + " " + ampm)
+        
 
-    return date_str, time_nl, address_nl
+    return date_str, time_nl, time_12hr_str, address_nl
 
 
 ################

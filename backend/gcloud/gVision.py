@@ -23,8 +23,11 @@ def gcloudLabels(imagePath):
     labels = []
     print('Labels:')
     for label in rawLabels:
-        # print(label.description)
+        # print(label.description):w
+
         labels.append(label.description)
+    
+    if labels.contains("food", "resturant", "meal", "breakfast")
 
     return labels
 
