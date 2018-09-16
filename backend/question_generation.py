@@ -1,7 +1,10 @@
 import sys
+import json
 
 def main():
-    print "Hello World!"
+    arg1 = sys.argv[1]
+    print(arg1['keyword'])
+    print('Hello World!')
     sys.stdout.flush()
 
 if __name__ == '__main__':
