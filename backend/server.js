@@ -22,35 +22,35 @@ app.use(cors(corsOptions));
 app.locals.keyword_dict = {
     'surfing': {
         'date': ["Aug-15-2018", "Sep-16-2018"],
-        'pos': "verb-ing",
+        'pos': "VBG",
         'location': ['Malibu', 'Hawaii'],
         'type': "activity",
         'comp': [["Aug-15-2018",'Malibu'], ["Sep-16-2018", "Hawaii"]]
     },
     'running': {
         'date': ["Aug-02-2018"],
-        'pos': "verb-ing",
+        'pos': "VBG",
         'location':['Swarthmore'],
         'type': "activity",
         'comp': [["Aug-02-2018", "Swarthmore"]]
     },
     'Malibu': {
         'date': ["Aug-15-2018"],
-        'pos': "noun",
+        'pos': "NN",
         'location' : ['Malibu'],
         'type': 'location',
         'comp': [["Aug-15-2018", "Malibu"]]
     },
     'Swarthmore': {
         'date': ['Aug-02-2018'],
-        'pos': 'noun',
+        'pos': 'NN',
         'location': ['Swarthmore'],
         'type': 'location',
         'comp': [["Aug-02-2018", "Swarthmore"]]
     },
     'Hawaii': {
         'date': ['Sep-16-2018'],
-        'pos': 'noun',
+        'pos': 'NN',
         'location' : ['Hawaii'],
         'type': 'location',
         'comp':[["Sep-16-2018", "Hawaii"]]
@@ -150,7 +150,7 @@ app.get('/client/prompts/:id', (req, res) => {
 })
 
 // routes for web app
-app.post('/client/text/:id', (req, res) => {
+app.get('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
     console.log(req.body.newSentence)
     const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.body.newSentence]);
@@ -230,7 +230,7 @@ function createMiniBlockFromType(type, data) {
 }
 
 function createBlockFrom(block) {
-    var parsedBlock = block.map(miniBlock => { 
+    var parsedBlock = block.map(miniBlock => {
         return createMiniBlockFromType(miniBlock['type'], miniBlock['data'])
     })
 
@@ -266,10 +266,10 @@ function createRockClimbingBlock() {
     let imagePrompt = "How did rock climbing go?"
 
     let block = [
-        {'type': 'timestamp', 'data': timestamp}, 
-        {'type': 'caption', 'data': caption}, 
-        {'type': 'image', 'data': image}, 
-        {'type': 'imagePrompt', 'data': imagePrompt}, 
+        {'type': 'timestamp', 'data': timestamp},
+        {'type': 'caption', 'data': caption},
+        {'type': 'image', 'data': image},
+        {'type': 'imagePrompt', 'data': imagePrompt},
     ]
     return createBlockFrom(block)
 }
