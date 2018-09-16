@@ -3,10 +3,11 @@ import nltk
 import random
 import importlib
 import sys
+import urllib
 
+import gCloudStorage
 import im2metadata
 import gVision
-import urllib
 import questions
 
 class QuestionGeneration(object):
@@ -43,49 +44,88 @@ class QuestionGeneration(object):
         return random.choice(["With friends?",
         "Who were you with?"])
 
+# order of things to be printed
+# timestamp - 11:30pm as string
+# caption
+# image_url
+# image_prompt
+
+# {'type': 'timestamp', 'data': timestamp},
+# {'type': 'caption', 'data': caption},
+# {'type': 'image', 'data': image},
+# {'type': 'emoji', 'data': emoji},
+# {'type': 'imagePrompt', 'data': imagePrompt},
 def main():
-    localPhotoPath = sys.argv[1]
+    # load data from front end
+    photo_url = sys.argv[1]
+    # photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
+    keyword_dict_str = sys.argv[2]
+
+    photo_name = str(random.randint(0, 99999999)) + ".jpg"
+    loc_photo_path = "./fromFrontEnd/" + photo_name
+    urllib.urlretrieve(photo_url, loc_photo_path )
+
+    gcloud_base_url = 'https://storage.googleapis.com/project-tao/'
+    photo_gcloud_url = gcloud_base_url + photo_name
+
+    # upload to gCloudStorage
+    bucket_name = 'project-tao'
+    gCloudStorage.upload_blob(bucket_name, loc_photo_path, photo_name)
+
     # localPhotoPath = '../resources/kastanByLake.jpg'
-    date_str, time_nl, address_nl = im2metadata.im2date_time_addr(localPhotoPath)
-    # todo: google clout storage (get url)
+    date_str, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
 
-    capt = captionImage("https://www.rawstory.com/wp-content/uploads/2015/05/A-man-surfing-Shutterstock.jpg")
-    print("captioinnnn:", capt)
+    print("{'type': 'timestamp', 'data':" + time_12hr_str + "}, ")
+    print("{'type': 'image', 'data':" + photo_gcloud_url + "}, ")
 
-    labels_list = gVision.gcloudLabels(localPhotoPath)
-    group_bool = gVision.gcloudFaces(localPhotoPath)
+    labels_list = gVision.gcloudLabels(loc_photo_path)
+    group_bool = gVision.gcloudFaces(loc_photo_path)
+    capt = captionImage(photo_gcloud_url)
 
+    tagged = tokenizeAndTag(capt)
+    populateDict(tagged, keyword_dict_str, address_nl, date_str, group_bool)
 
-    d = {}
-    tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
-    # for word in labels[:5]:
-    #     tokenizeAndPopulateDict(word, d)
+    for word in tagged:
+        keyword = word[0]
+        pos = word[1]
+        if pos == 'VBG':
+            capt = keyword + " " + address_nl + " " + time_nl
 
+    print("{'type': 'caption', 'data':" + capt + "}, ")
 
-def captionImage(filePath):
+def captionImage(url):
     image_url = url
     cBot = CaptionBot()
-    # caption = cBot.url_caption(image_url)
-    caption = cBot.file_caption(filePath)
+    caption = cBot.url_caption(image_url)
     caption = caption.split(" ")[2:]
     caption = " ".join(caption)
     return caption
 
+# types of blocks:
+# timestamp, caption, image, imagePrompt (fitbit, location)
 
-def tokenizeAndPopulateDict(sentence, dict, location, date, type):
+def tokenizeAndTag(sentence):
     tokens = nltk.word_tokenize(sentence)
     tagged = nltk.pos_tag(tokens)
-    print("tagged", tagged)
+    return tagged
+
+def populateDict(tagged, dict, location, date, type):
+    activity = None
     for word in tagged:
         keyword = word[0]
         pos = word[1]
+        if pos == 'VBG' or pos == 'VB':
+            activity = True
+        locationAndDate=None
+        if location != None and date != None:
+            locationAndDate = [location, date]
         dict[keyword] = {"location": location,
                         "pos": pos,
                         "date": date,
-                        "type": type}
+                        "type": type,
+                        "locationAndDate": locationAndDate}
 
     group = None
-    activity = None
     food = None
     if type == "Group":
         group = True
@@ -93,7 +133,8 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
         activity = True
     elif type == "Food":
         food = True
-    print(askQs(location, activity, food, group))
+    imagePrompt = askQs(location, activity, food, group)
+    print("{'type': 'imagePrompt', 'data': %s}" %imagePrompt)
     sys.stdout.flush()
 
 def askQs(location=None, activity=None, food=None, group=None):
