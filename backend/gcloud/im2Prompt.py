@@ -44,8 +44,8 @@ class QuestionGeneration(object):
         "Who were you with?"])
 
 def main():
-    # localPhotoPath = sys.argv[1]
-    localPhotoPath = '../resources/kastanByLake.jpg'
+    localPhotoPath = sys.argv[1]
+    # localPhotoPath = '../resources/kastanByLake.jpg'
     date_str, time_nl, address_nl = im2metadata.im2date_time_addr(localPhotoPath)
     # todo: google clout storage (get url)
 
