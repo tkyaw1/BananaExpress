@@ -19,12 +19,15 @@ class QuestionGeneration(object):
         "Who did you talk to today and about what?",
         "What were you grateful for today?",
         "Did you notice anything different today?",
-        "What did you accomplish today?"])
+        "What did you accomplish today?",
+        "What is something you want to do tomorrow?",
+        "What is something you want to do this weekend?",
+        "What is something you want to do soon?"])
 
     def askLocationQ(self, location):
         return random.choice(["What did you do in %s?" %location,
         "Why did you go to %s?" %location,
-        "What did eat do in %s?" %location,
+        "What did eat in %s?" %location,
         "Who did you meet in %s?" %location,
         "First time in %s?" %location,
         "Have you ever been to %s?" %location])
@@ -36,11 +39,17 @@ class QuestionGeneration(object):
 
     def askFoodQ(self, food):
         return random.choice(["How was your meal?",
-        "Have a good meal?"])
+        "Have a good meal?", "Would you get the same meal again?"])
 
     def askPeopleQ(self):
         return random.choice(["With friends?",
         "Who were you with?"])
+
+    def askCompActivityQ(self, verb_ing, date, location):
+        """ Given that the verb was an ing verb:
+        """
+        return random.choice(["How was %s this time compared to %s on %s at %s?" % (verb_ing, verb_ing, date, location)]) #TODO: need to add more to this
+
 
 def main():
     capt = captionImage("https://www.rawstory.com/wp-content/uploads/2015/05/A-man-surfing-Shutterstock.jpg")
