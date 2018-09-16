@@ -3,10 +3,11 @@ import nltk
 import random
 import importlib
 import sys
+import urllib
 
+import gCloudStorage
 import im2metadata
 import gVision
-import urllib
 import questions
 
 class QuestionGeneration(object):
@@ -43,20 +44,46 @@ class QuestionGeneration(object):
         return random.choice(["With friends?",
         "Who were you with?"])
 
+# order of things to be printed
+# timestamp - 11:30pm as string
+# caption
+# image_url
+# image_prompt
+
+# {'type': 'timestamp', 'data': timestamp},
+# {'type': 'caption', 'data': caption},
+# {'type': 'image', 'data': image},
+# {'type': 'emoji', 'data': emoji},
+# {'type': 'imagePrompt', 'data': imagePrompt},
 def main():
-    # url= sys.argv[1]
-    localPhotoPath = '../resources/kastanByLake.jpg'
-    date_str, time_nl, address_nl = im2metadata.im2date_time_addr(url)
-    # todo: google clout storage (get url)
+    # load data from front end
+    photo_url = sys.argv[1]
+    keyword_dict_str = sys.argv[2]
 
-    url = "https://www.rawstory.com/wp-content/uploads/2015/05/A-man-surfing-Shutterstock.jpg"
+    photo_name = str(random.uniform(0, 9999)) + ".jpg"
+    loc_photo_path = "./fromFrontEnd/" + photo_name
+    urllib.urlretrieve(photo_url, loc_photo_path )
 
-    capt = captionImage(url)
-    # print("captionnnn:", capt)
-    print({'type': 'caption', 'data': capt})
+    gcloud_base_url = 'https://storage.googleapis.com/project-tao/'
+    photo_gcloud_url = gcloud_base_url + photo_name
 
-    labels_list = gVision.gcloudLabels(localPhotoPath)
-    group_bool = gVision.gcloudFaces(localPhotoPath)
+    # upload to gCloudStorage
+    bucket_name = 'project-tao'
+    gCloudStorage.upload_blob(bucket_name, loc_photo_path, loc_photo_path)
+
+    # localPhotoPath = '../resources/kastanByLake.jpg'
+    date_str, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
+    print("TEST 12 hour string: " + time_12hr_str) # TODO DELETE
+
+    capt = captionImage(photo_gcloud_url)
+
+    print("{'type': 'timestamp', 'data':" + time_12hr_str + "}, ")
+    print("{'type': 'caption', 'data':" + capt + "}, ")
+    print("{'type': 'image', 'data':" + photo_gcloud_url + "}, ")
+
+
+    labels_list = gVision.gcloudLabels(loc_photo_path)
+    group_bool = gVision.gcloudFaces(loc_photo_path)
 
     d = {}
     tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
@@ -73,7 +100,8 @@ def captionImage(url):
     caption = " ".join(caption)
     return caption
 
-
+# types of blocks:
+# timestamp, caption, image, imagePrompt (fitbit, location)
 def tokenizeAndPopulateDict(sentence, dict, location, date, type):
     tokens = nltk.word_tokenize(sentence)
     tagged = nltk.pos_tag(tokens)
