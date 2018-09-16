@@ -21,11 +21,11 @@ app.use(cors(corsOptions));
 
 app.locals.keyword_dict = {
     'fishing': {
-        'date': ["Sep-11-2018", "Sep-16-2018"],
+        'date': ["Sep-11-2018", "Sep-12-2018"],
         'pos': "VBG",
         'location': ['San Francisco, CA', 'Wenatche, WA'],
         'type': "activity",
-        'comp': [["Sep-11-2018",'San Francisco, CA'], ["Sep-16-2018", "Wenatche, WA"]]
+        'comp': [["Sep-11-2018",'San Francisco, CA'], ["Sep-12-2018", "Wenatche, WA"]]
     },
     'bridge': {
         'date': ["Sep-13-2018", "Sep-16-2018"],
@@ -63,11 +63,11 @@ app.locals.keyword_dict = {
         'comp': [["Sep-14-2018", "San Francisco, CA"]]
     },
     'camping': {
-        'date': ["Sep-15-2018"],
+        'date': ["Sep-14-2018"],
         'pos': "VBG",
         'location':['Wenatche, WA'],
         'type': "activity",
-        'comp': [["Sep-15-2018", "Wenatche, WA"]]
+        'comp': [["Sep-14-2018", "Wenatche, WA"]]
     },
     'sunset chasing': {
         'date': ["Sep-14-2018"],
@@ -109,54 +109,54 @@ app.locals.corpus = {
     ]
 }
 
-app.locals.storedDays = [{}]
+app.locals.storedDays = [[], [], [], [], [], [], []]
 
 app.locals.storedBlocks = []
 
-app.locals.dashboards = {
-    '9-11-2018': {
+app.locals.dashboards = [
+    {
         'temperature': 75,
         'steps': 13400,
         'sleep': '8 hr 30 min',
         'weather': 'lightning',
         'mood': 'grinSweat'
     },
-    '9-12-2018': {
+    {
         'temperature': 81,
         'steps': 11000,
         'sleep': '7 hr 45 min',
         'weather': 'lightning',
         'mood': 'grinSweat'
     },
-    '9-13-2018': {
+    {
         'temperature': 60,
         'steps': 13020,
         'sleep': '6 hr 30 min',
         'weather': 'lightning',
         'mood': 'grinSweat'
     },
-    '9-14-2018': {
+    {
         'temperature': 80,
         'steps': 11000,
         'sleep': '9 hr 30 min',
         'weather': 'lightning',
         'mood': 'grinSweat'
     },
-    '9-15-2018': {
+    {
         'temperature': 75,
         'steps': 8050,
         'sleep': '7 hr 30 min',
         'weather': 'lightning',
         'mood': 'grinSweat'
     },
-    '9-16-2018': {
-        'temperature': 61,
-        'steps': 4000,
+    {
+        'temperature': 85,
+        'steps': 4570,
         'sleep': '0 hr 0 min',
         'weather': 'sunny',
         'mood': 'tired'
     }
-}
+]
 
 app.locals.emojis = ['☀️', '☀️','☀️','☀️','☀️','☀️','🌤','🌤','🌤','⛅️','⛅️','⛅️', '🌥','🌦', '🌧', '⛈', '🌩','🌨','️☔️','☂️']
 
@@ -172,8 +172,57 @@ app.get('/', (req, res) => {
     // while (!detected) {
     //     continue
     // }
+
+    let block0 = [
+        {'type': 'timestamp', 'data': '10:30 am'},
+        {'type': 'caption', 'data': 'Fishing in San Francisco'},
+        {'type': 'image', 'data': 'https://lh3.googleusercontent.com/QNAGaeh56uiuQSB_EXJr_RIl-b7P43UDmcyKfmEhrnRDFQVeqaJzeGOq192jqFFtcUb2cxmR0iBPEtc8LwvxfSZMNdinr7VlmJZb7gfbWb9Zou0a-pTuGlu-VLkdPP24LiFnD07Pbo1fBtp2UE2tYlOJmeyElwif1Wjs3Qqjn8b90bSCIpCxad2jarjV1wnOylp5wLdE5KxtiqZ0520wHf8ueZhDRNbNsZGJhkfNU9WTuLGy1fm7g0SCq0KgdABsBwnRd2teRzqRIgMxHrYaXRUXXGDqgl2cpkCdFaCvuTi6doIB33VtL2ZKT_e8hBT7n3Q3rAjZyiR7NjT5Dqmvu3-03G3IMgiYA9fPP_Kav_8A0Rq2RiVbTGxjhYryeR-Jo6gZBH-ePdWwEvWWE6eRkHspvlwib9uKDF6ZCrBTFTHxhSeiobUK91of2pTUl2Mb7s1Iq92mUbxbq5PPbB0e6JY8Xlh4i_sBI4ueAHTLablcw3BkQvSICO1d47FJFnJAeX6jMyP-VEAmYHMgSDm_P3yPRnEcn5mUAsjAzpgixboj473pY-oX33DfkuGFI90w4Qw_js5aq9x7jVSuC1L5Wx0Gavtvz_qOxJIu3_yTQKN622MpQ6NC415AKN4lf55j5CV6BPBYh0kS405eZC8zVFkd48ViALUilniS0L8o6r4tumE7YAMxAyeAyQ=w572-h763-no'},
+        {'type': 'imagePrompt', 'data': 'How was fishing today?'},
+        {'type': 'paragraph', 'data': '\nI\'m so happy to be fishing with friends today. I walked up the shore and admired the mountains. '}
+    ]
+    let block1 = [
+        {'type': 'timestamp', 'data': '9:30'},
+        {'type': 'caption', 'data': 'Surfing at Ocean B'},
+        {'type': 'image', 'data': 'https://lh3.googleusercontent.com/Yu0cZlBHluyPIREL1xD1DzEvVrVaV0wjRDHpT8WuktrPzKtEs3RNLbFZzilYbJdAtKBRAL_EAb9S-CdFqNUSs5Y4ubxSQba-82M9QsNocjrh8YTRjLKjWubNgjhdkgBR5qI6xmyUUkdmJtNt8onoNDbVaFuemg5BbyVYSWR0_ykO5CSx9CNUmgIkhCEd8abRn34nFT2patgRV278sxheH-ijDIptQpiwsGA6PyeMAK3P-bBokI5GcKN5E0yWAfEyrntHireoSmItClMx_VxYiOo-qTpKU5eHuQamhMS5Loem-mxxeeFwzKN7DKhTWfYUJTgje6ByMhdu5sKkfHefe_DwkayhWF07GMuCe4a_14H2Aey-if9e8HsMO42B4ns7pTxjl852EZgWOSPzuIN5bI2pxJedy5B4MHjvGURAoX0fgYAGW80tMePMkpjPn57KCMKNur-eNdE_h4KK3toQlenv85uG9gOkbp_04wjOsWz0mEZz2CU50D83dcsjSvcBRvy8hupvADjiixSczY43bWnSuakBAvg60v75aU0_R2VOiQRtB5nW883PceKgrGRPHFdIoaw3oh7i0GZdnExENi7k5OOqAaT2p_BHTyUgQK8UYKyaVFFGE08_P_V3BVve-DDj9chdyRib6rc5fy0JR5KQHgzH3ukwzl8JsWRJx7qT0HLaorovMSRJ=w670-h1188-no'},
+        {'type': 'imagePrompt', 'data': 'Who were you with today?'},
+        {'type': 'paragraph', 'data': 'San Francisco is an incredibly vibrant city. I loved continually walking the streets, and I even went running along the boardwalk.  I loved the Golden Gate bridge.. '},
+    ]
+    let block2 = [
+        {'type': 'timestamp', 'data': '11:30'},
+        {'type': 'caption', 'data': 'Golden Gate in San Francisco'},
+        {'type': 'imagePrompt', 'data': 'What did you like San Francisco?'},
+        {'type': 'image', 'data': 'https://storage.cloud.google.com/project-tao/GoldenGate.jpg'},
+        {'type': 'paragraph', 'data': '\nToday we drove across the Golden Gate Bridge! As always, Karl the fog gave us a very San Franciscan welcome. '},
+    ]
+
+    let block3 = [
+        {'type': 'timestamp', 'data': '1:30'},
+        {'type': 'caption', 'data': 'Camping in Wenatche, WA'},
+        {'type': 'imagePrompt', 'data': 'What did you like about camping?'},
+        {'type': 'image', 'data': 'https://lh3.googleusercontent.com/YN5Xs5uzgcs4-LoSH0ZiydWmE_3kgRNp2JOHOTXDF-yVFSg93wXJjDqmaXIdTk81qUu0Q8g1zfn9sv6HKHcJQ10L0TeozRml8ZTxyjrsazp_mxoLbeAM957E5AxFlf9ri82zvcTgGfDFT-6UA6ula-p9jNu9QVudyna7gi_OQ3eeFSl3Sq_AyVbQvuaViY1yRQpapZvwNw6568d_SIxRj3JarX7OagSUMFMq4qEZtFA_JlAkY3FGPEg8rbH06EPt4dGFgAxXbpy6r-yL4M_IccYu9i4I2A7U_qvwCDjb5pcY03WGogAPjU0D0hFxWsA5ohGiQuR2rH1Gjo3MIXXmramFWvTGYwPPkAPgpIk6qb2QlrH_p5-EJOrBqQ04UahqOw0tM_i2KcEXWo7oGbUNZqzj4OWGoUyTVGNHJK5fUEAbaTGs6RH_O8hCyf6lma-VkbXEKzrKy4HZhMuUb11Mbe7gNLzmj975FX2Rxv4damVH-IMyU1dzRUIPnOWnFmwskkGWGSfDHZmAA6StAZzlaDuV6KPBSRk0KQ3dD5_72fhPEMMPb3KzsSoM1a4cPg6maMjXuaj_4p1xnfGa5vh1esJpYqimOwXEpOE2ASWbdVjXehKwUuikV2BklcsPrW03dawf9bu5Mesd2nQ0vUQJx9AK8o0_WnZp3TUeuH5EKASaxA23AucgWIjPIg=w892-h1188-no'},
+        {'type': 'paragraph', 'data': '\nStarted out our day hiking in the woods. We saw a small black bear and a mama bear. '},
+    ]
+
+    let block4 = [
+        {'type': 'timestamp', 'data': '10:30'},
+        {'type': 'caption', 'data': 'Chasing Sunsets in Wenatche, WA'},
+        {'type': 'imagePrompt', 'data': 'Who were you with in Wenatche?'},
+        {'type': 'image', 'data': 'https://lh3.googleusercontent.com/dFRtuCDpKCYnfWXE-Pbt_6mI3imqEP2v-m4BfBYkx8xqKNf0qzu5TAtGVJDTjF6cel10-rCZLGnkVsPtXEultAniQdkxVFIz37pJOh6yKyPfLvz8BtFKYayABW2fdCDPsOFEtMsULDKVrYYIV6Z0NpeXIDLcIaydh1TL3l1hnkJ_v9Di_ED-ErlqC7SNUBxj_HsnZeP-6MgXlDmksBuR0Nv2kMeKmt2Jk_LFJfKv_FgC6_2oEgfUzQoKDkzAONkcpdXQHbXsbfbGMfZ5Yn6uzu9WiC82k5XNbe3XRcaEbMTsoMpR42a65arIn4TQI2sh7-e1CtMX5Q5QpDA-t_l5bN-T8L40XZgGF1cSTj_04vQD15X96y6OVv9uFdLbchUW7sPFJY_OJJgv_RudCFktj_YkA67MrEOeCcouKg64hxVoBV3O4OAbK4yi6T6Yt-7g4vUz7l89CcWo6S7DkS1AEUsdxnE1h-y5u2hhOnLceYDJWbl3Z9FXkI2ERQiVb8rf0NaedsG1jebjYOZ23kgbqe3FZzO0O0hshAlOOBcY9U6c3SqzokV6QBczjKnlyycHoenvscZ_Qspl9pj0dlma5shCyzoVGWLw5D_OWEHg7hWBvO5klMPVWmepcdvmpOfRFU4fM1qPe6GcEGYo_OAM5e8EZRM6zsWLTI2oXd9NKVor3-YqcR5SyxBP=w1840-h1036-no'},
+        {'type': 'paragraph', 'data': '\nI\'m so sad that this is our last day on the West Coast! I had so much fun this past week camping, fishing, and chasing sunsets. I\'m really going to miss these summer vibes. Fishing, fishing, fishing! '},
+    ]
+
     console.log('received get req!!')
-    res.send({'Express': 'Hello!'})
+
+    app.locals.prompts = {
+        'test': ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
+    }
+    app.locals.storedDays[0] = [createBlockFrom(block0), createFitbitBlock()]
+    app.locals.storedDays[1] = [createBlockFrom(block1), createFitbitBlock()]
+    app.locals.storedDays[2] = [createBlockFrom(block2), createFitbitBlock()]
+    app.locals.storedDays[3] = [createBlockFrom(block3), createFitbitBlock()]
+    app.locals.storedDays[4] = [createBlockFrom(block4), createFitbitBlock()]
+    app.locals.storedDays[5] = [createRockClimbingBlock(), createFitbitBlock()]
+    res.send({'Express': app.locals.storedDays})
 });
 
 // routes for phone
@@ -222,6 +271,7 @@ app.get('/client/prompts/:id', (req, res) => {
     //     }
     // }
     let prompts = app.locals.prompts[day]
+    console.log(app.locals.keyword_dict)
     console.log('sending prompts back', prompts)
     res.send({ prompts: prompts});
 })
@@ -276,21 +326,23 @@ app.get('/client/blocks/:id', (req, res) => {
     // we'll use an id to differentiate entries for different days
     // console.log('received block request!')
     if (req.params.id == 'reset') {
-        app.locals.hasNewBlocks = true
+        // app.locals.hasNewBlocks = true
         // app.locals.storedBlocks = []
-        app.locals.prompts = {
-            'test': ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
-        }
+        // app.locals.prompts = {
+        //     'test': ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
+        // }
     }
     const hasNewBlocks = app.locals.hasNewBlocks
-    app.locals.hasNewBlocks = false
+    // app.locals.hasNewBlocks = false
+
+    const dateIndex = req.params.id
     // console.log(hasNewBlocks)
-    var blocks = app.locals.storedBlocks
-    blocks = blocks.concat([createRockClimbingBlock(), createFitbitBlock()])
-    if (hasNewBlocks) {
-        res.send({ blocks: blocks, hasNewBlocks: hasNewBlocks });
-        console.log('sent block back')
-    }
+    var blocks = app.locals.storedDays[dateIndex]
+    // blocks = blocks.concat([createRockClimbingBlock(), createFitbitBlock()])
+    // if (hasNewBlocks) {
+    res.send({ blocks: blocks, hasNewBlocks: hasNewBlocks });
+    console.log('sent block back')
+    // }
 })
 
 app.get('/client/dashboard/:id', (req, res) => {
@@ -347,9 +399,10 @@ function addImageBlock(imageDict) {
 }
 
 function createFitbitBlock() {
+    
     let timestamp = '2:30 pm ' + app.locals.emojis[Math.floor(Math.random() * app.locals.emojis.length)]
     let caption = 'Afternoon Run'
-
+    
     let block = [
         {'type': 'timestamp', 'data': timestamp},
         {'type': 'caption', 'data': caption},

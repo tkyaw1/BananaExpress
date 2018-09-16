@@ -39,14 +39,21 @@ function mapPromptsToCards(prompt, index) {
     );
 }
 
+var dates = ['9-11-18', '9-12-18', '9-13-18', '9-14-18', '9-15-18', '9-16-18']
+
 class Journal extends Component {
     constructor(props) {
         super(props);
+        var date = '9-16-2018'
+        var dateIndex = 0
+        // if (window.location.hash != '') 
         
+        // }
         this.state = {
             hasNewSentence: true,
             prompts: [],
-            date: '9-16-2018',
+            date: date,
+            dateIndex: dateIndex,
             dashboard: {
                 temperature: 0,
                 steps: 0,
@@ -59,12 +66,17 @@ class Journal extends Component {
     };
     
     componentDidMount() {
+        var dateIndex = parseInt(window.location.hash.substring(1))
+        var date = dates[dateIndex]
         var handle = setInterval(this.awaitBlocks, 1000);
         var handle2 = setInterval(this.awaitPrompts, 1000);
+        var handle2 = setInterval(this.resetPrompts, 15000);
         var handle3 = setInterval(this.setupDashboard, 5000);
         this.setState({
             handle: handle,
             handle2: handle2,
+            dateIndex: dateIndex,
+            date: date,
             handle3: handle3,
             initialFetch: true
         })
@@ -90,10 +102,7 @@ class Journal extends Component {
 
     fetchDashboardData = async () => {
         // const url = 'https://lotus-journal.herokuapp.com/blocks/test';
-        var url = '/client/dashboard/' + this.state.date
-        // if (this.state.initialFetch) {
-        //     url = '/client/blocks/reset'
-        // }
+        var url = '/client/dashboard/' + this.state.dateIndex
 
         const response = await fetch(url);
         const body = await response.json();
@@ -108,6 +117,7 @@ class Journal extends Component {
             .then(res => {
                 const { blocks, hasNewBlocks } = res
                 console.log('received block response')
+                console.log(blocks)
                 if (hasNewBlocks) {
                     this.setState ({
                         blocks: blocks
@@ -130,6 +140,34 @@ class Journal extends Component {
             .catch(err => console.log(err));
     }
 
+    resetPrompts = () => {
+        this.resetP()
+            .then(res => {
+                console.log('received response!')
+                const newPrompts = res.prompts
+                console.log(newPrompts)
+                this.setState({
+                    prompts: newPrompts
+                })
+            })
+            .catch(err => console.log(err));
+    }
+
+    resetP = async () => {
+        // const url = 'https://lotus-journal.herokuapp.com/blocks/test';
+        var url = '/client/prompts/test'
+        // if (this.state.initialFetch) {
+        //     url = '/client/blocks/reset'
+        // }
+        console.log('sent prompt fetch!')
+
+        const response = await fetch(url);
+        const body = await response.json();
+
+        if (response.status !== 200) throw Error(body.message);
+
+        return body;
+    };
     fetchPrompts = async () => {
         // const url = 'https://lotus-journal.herokuapp.com/blocks/test';
         var url = '/client/prompts/test'
@@ -201,9 +239,10 @@ class Journal extends Component {
 
     callApi = async () => {
         // const server_url = 'https://lotus-journal.herokuapp.com/blocks/test';
-        var url = '/client/blocks/test'
+        var dateIndex = this.state.dateIndex
+        var url = '/client/blocks/' + dateIndex
         if (this.state.initialFetch) {
-            url = '/client/blocks/reset'
+            url = '/'
             this.setState({
                 initialFetch: false
             })
@@ -255,7 +294,9 @@ class Journal extends Component {
 
 
     render() {
-        
+        const index = this.state.dateIndex
+        const prevIndex = index-1
+        const nextIndex = index+1
         const isTyping = this.state.isTyping
         const blocks = this.state.blocks
         const journalEntry = blocks ? blocks.map(this.mapJSONToBlock): <Loader className='block-loading' active={true}><Header>Loading your journal...</Header></Loader>
@@ -274,9 +315,9 @@ class Journal extends Component {
                     {/* replace with date variable */}
                     <div>
                         <Grid centered columns='three'>
-                            <Button basic circular style={{ marginTop: '1.5%', width: '40px', height: '40px' }} icon='chevron left' floated='left' id='left' />
-                            <Header size='large' style={{ paddingBottom: '3%' }} content='Saturday, September 16' />
-                            <Button basic circular style={{ marginTop: '1.5%', width: '40px', height: '40px' }} icon='chevron right' floated='right' id='right' />
+                            <Button basic onClick={()=> {this.props.menuClicked('journal/9#'+prevIndex)}} circular style={{ marginTop: '1.5%', width: '40px', height: '40px' }} icon='chevron left' floated='left' id='left' />
+                            <Header size='large' style={{ paddingBottom: '3%' }} content={this.state.date} />
+                            <Button basic onClick={()=> {this.props.menuClicked('journal/9#'+nextIndex)}} circular style={{ marginTop: '1.5%', width: '40px', height: '40px' }} icon='chevron right' floated='right' id='right' />
                         </Grid>
                     </div>
                     <Dashboard {...dashboard}/>

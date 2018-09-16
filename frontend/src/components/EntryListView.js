@@ -26,37 +26,37 @@ function generateColor() {
 const dateCards = [
     {
         header: '9/11/18',
-        to: '/journal/9/14',
+        to: '/journal/9#0',
         action: 'View',
         text: '',
     },
     {
         header: '9/12/18',
-        to: '/journal/0',
+        to: '/journal/9#1',
         action: 'View',
         text: '',
     },
     {
         header: '9/13/18',
-        to: '/journal/0',
+        to: '/journal/9#2',
         action: 'View',
         text: '',
     },
     {
         header: '9/14/18',
-        to: '/journal/9/14',
+        to: '/journal/9/9#3',
         action: 'View',
         text: '',
     },
     {
         header: '9/15/18',
-        to: '/journal/0',
+        to: '/journal/9#4',
         action: 'View',
         text: '',
     },
     {
         header: '9/16/18',
-        to: '/journal/0',
+        to: '/journal/9#5',
         action: 'View',
         text: '',
     },

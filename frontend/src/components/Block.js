@@ -153,7 +153,7 @@ class Block extends Component {
         const paragraph = value.document.text
         console.log(paragraph.length)
         if (paragraph.length > 200) {
-            console.log('sending paragraph')
+            // console.log('sending paragraph')
             this.props.sendParagraph(paragraph)
         }
         this.setState({ value })
