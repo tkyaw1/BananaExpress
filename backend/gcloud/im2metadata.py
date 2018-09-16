@@ -22,10 +22,13 @@ def get_address(lat, lon):
 
     response = requests.get(url=url)
     data = response.json()
-    formatted_address = data['results'][0]['formatted_address']
-    return formatted_address
+    # formatted_address = data['results'][0]['formatted_address']
+    city = data['results'][0]['address_components'][2]["short_name"]
+    state = data['results'][0]['address_components'][5]["short_name"]
 
-    # i learned the hierarchy from just trying this url in broswer
+    loc_prompt = "in " + city + ", " + state
+    return loc_prompt
+    # I learned the hierarchy from just trying this url in broswer
     # https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyBn-zIEHePvJCxIVbb1brW7Hy1myDe3DYU
 
 
@@ -128,7 +131,7 @@ class FancyDateTimeDelta(object):
         return ", ".join(fmt) + " ago"
 
 def getTimeOfDay(hour): # the hour [24 hr time] of the photo was taken
-    End_str = ['in the late evening, in the early morning', 'in the morning','at midday', 'in the afternoon','in the evening']
+    print("the hour is!!! " + str(hour))
 
     if (22 <= hour < 24 or 0 <= hour < 4):
         return 'in the late evening'
@@ -159,23 +162,20 @@ def im2date_time_addr(photoPath):
     date_str = exif_data.get('DateTime')
     # format: 2018:08:29 18:47:49
     datetime_object = datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
-    # print(datetime_object)
     time_nl = getTimeOfDay(datetime_object.hour)
+
     if(datetime_object.hour >=12 ):
         ampm = "PM"
         hour = datetime_object.hour - 12
     else:
         ampm = "AM"
         hour = datetime_object.hour
-    time_12hr_str = (hour + ":" + datetime_object.minute + " " + ampm)
+    time_12hr_str = (str(hour) + ":" + str(datetime_object.minute) + " " + ampm)
         
 
     return date_str, time_nl, time_12hr_str, address_nl
 
 
-################
-# Example ######
-################
 """
 if __name__ == "__main__":
 
@@ -184,6 +184,9 @@ if __name__ == "__main__":
     exif_data = get_exif_data(image)
     lat, lon = get_lat_lon(exif_data)
     address = get_address(lat, lon)
+    date_str, time_nl, time_12hr_str, address_nl = im2date_time_addr("../resources/cloudCity.jpg")
+    print ("date_str: " + date_str)
+    print ("time_12hr_str: " + time_12hr_str)
 
     # GET the TIME
 
@@ -194,7 +197,7 @@ if __name__ == "__main__":
     # print(datetime_object)
 
     time_of_day = getTimeOfDay(datetime_object.hour)
-    print("Running at " + str(address) + " " + time_of_day)
+    print("Running " + str(address) + " " + time_of_day)
     # print (get_lat_lon(exif_data))
 
 """
