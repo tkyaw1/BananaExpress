@@ -46,14 +46,14 @@ class QuestionGeneration(object):
 
 # order of things to be printed
 # timestamp - 11:30pm as string
-# caption 
+# caption
 # image_url
 # image_prompt
 
-# {'type': 'timestamp', 'data': timestamp}, 
-# {'type': 'caption', 'data': caption}, 
-# {'type': 'image', 'data': image}, 
-# {'type': 'emoji', 'data': emoji}, 
+# {'type': 'timestamp', 'data': timestamp},
+# {'type': 'caption', 'data': caption},
+# {'type': 'image', 'data': image},
+# {'type': 'emoji', 'data': emoji},
 # {'type': 'imagePrompt', 'data': imagePrompt},
 def main():
     # load data from front end
@@ -86,11 +86,11 @@ def main():
 
     d = {}
     tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
-    # for word in labels[:5]:
-    #     tokenizeAndPopulateDict(word, d)
+    for word in labels[:5]:
+        tokenizeAndPopulateDict(word, d)
 
 
-def captionImage(filePath):
+def captionImage(url):
     image_url = url
     cBot = CaptionBot()
     # caption = cBot.url_caption(image_url)
@@ -108,10 +108,14 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
     for word in tagged:
         keyword = word[0]
         pos = word[1]
+        locationAndDate=None
+        if location != None and date != None:
+            locationAndDate = [location, date]
         dict[keyword] = {"location": location,
                         "pos": pos,
                         "date": date,
-                        "type": type}
+                        "type": type,
+                        "locationAndDate": locationAndDate}
 
     group = None
     activity = None
@@ -122,20 +126,21 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
         activity = True
     elif type == "Food":
         food = True
-    print(askQs(location, activity, food, group))
+    askQs(location, activity, food, group)
     sys.stdout.flush()
 
 def askQs(location=None, activity=None, food=None, group=None):
     qG = questions.QuestionGeneration()
-    if location:
-        return qG.askLocationQ(location)
-    elif group:
-        return qG.askPeopleQ()
-    elif activity:
-        return qG.askActivityQ(activity)
-    elif food:
-        return qG.askFoodQ(food)
+    if location == True or activity == True or food == True or group == True:
+        if location:
+            print({'type': 'imagePrompt', 'data': qG.askLocationQ(location)})
+        if group:
+            print({'type': 'imagePrompt', 'data': qG.askPeopleQ()})
+        if activity:
+            print({'type': 'imagePrompt', 'data': qG.askActivityQ(activity)})
+        if food:
+            print({'type': 'imagePrompt', 'data': qG.askFoodQ(food)})
     else:
-        return qG.askGeneralQ()
+        print({'type': 'imagePrompt', 'data': qG.askGeneralQ()})
 
 main()
