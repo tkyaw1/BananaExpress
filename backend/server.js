@@ -23,11 +23,13 @@ app.locals.keyword_dict = {
     'swim': {
         'date': ["20180915", "20180916"],
         'pos': "verb",
+        'location': ['Malibu', 'Hawaii'],
         'type': "activity"
     },
     'running': {
         'date': ["20180802"],
         'pos': "verb-ing",
+        'location':['Swarthmore'],
         'type': "activity"
     }
 }
@@ -87,10 +89,10 @@ app.get('/client/prompts/:id', (req, res) => {
 })
 
 // routes for web app
-app.post('/client/text/:id', (req, res) => {
+app.get('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
 
-    const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), app.locals.corpus, req.params.id]);
+    const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.params.id]);
     pythonProcess.stdout.on('data', (data) => {
         // Do something with the data returned from python script
         // var temp = JSON.parse(data.toString());
@@ -156,7 +158,7 @@ function createJsonBlock(type) {
                             ]
                         }
                     ]
-                }, 
+                },
                 {
                     "object": "block",
                     "type": "paragraph",
@@ -187,7 +189,7 @@ function createJsonBlock(type) {
                 }
             ]
         }
-    } 
+    }
 }
 
 // im2txt
