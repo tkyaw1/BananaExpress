@@ -61,8 +61,7 @@ def main():
     # photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
     keyword_dict_str = sys.argv[2]
 
-
-    photo_name = str(random.randint(0, 9999999)) + ".jpg"
+    photo_name = str(random.randint(0, 99999999)) + ".jpg"
     loc_photo_path = "./fromFrontEnd/" + photo_name
     urllib.urlretrieve(photo_url, loc_photo_path )
 
