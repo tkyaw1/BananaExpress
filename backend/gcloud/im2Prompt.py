@@ -4,6 +4,7 @@ import random
 import importlib
 import sys
 import urllib
+import ast
 
 import gCloudStorage
 import im2metadata
@@ -60,6 +61,7 @@ def main():
     photo_url = sys.argv[1]
     # photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
     keyword_dict_str = sys.argv[2]
+    keyword_dict = ast.literal_eval(keyword_dict_str)
 
     photo_name = str(random.randint(0, 99999999)) + ".jpg"
     loc_photo_path = "./fromFrontEnd/" + photo_name
@@ -73,7 +75,9 @@ def main():
     gCloudStorage.upload_blob(bucket_name, loc_photo_path, photo_name)
 
     # localPhotoPath = '../resources/kastanByLake.jpg'
-    date_str, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
+    date_str, date_nl, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
+
+    capt = captionImage(photo_gcloud_url)
 
     print("{'type': 'timestamp', 'data':" + time_12hr_str + "}, ")
     print("{'type': 'image', 'data':" + photo_gcloud_url + "}, ")
@@ -83,7 +87,8 @@ def main():
     capt = captionImage(photo_gcloud_url)
 
     tagged = tokenizeAndTag(capt)
-    populateDict(tagged, keyword_dict_str, address_nl, date_str, group_bool)
+    populateDict(tagged, keyword_dict_str, address_nl, date_nl, group_bool)
+
 
     for word in tagged:
         keyword = word[0]
@@ -118,12 +123,17 @@ def populateDict(tagged, dict, location, date, type):
             activity = True
         locationAndDate=None
         if location != None and date != None:
-            locationAndDate = [location, date]
-        dict[keyword] = {"location": location,
-                        "pos": pos,
-                        "date": date,
-                        "type": type,
-                        "locationAndDate": locationAndDate}
+            locationAndDate = [date, location]
+        if keyword not in dict:
+            dict[keyword] = {"location": [location],
+                            "pos": pos,
+                            "date": [date],
+                            "type": type,
+                            "comp": locationAndDate}
+        else:
+            dict[keyword]["location"].append(location)
+            dict[keyword]["date"].append(date)
+
 
     group = None
     food = None

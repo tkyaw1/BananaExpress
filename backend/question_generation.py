@@ -93,7 +93,7 @@ def main():
     for keyword in keywords:
         if keyword in keyword_dict: # the keyword exists in the dictionary already
             # if the comp date/location pair is known, and the keyword is a verb in the ing form, ask a GREAT comp question
-            if ('verb-ing' in keyword_dict[keyword]['pos']) and (len(keyword_dict[keyword]['comp']) > 0):
+            if ('VBG' in keyword_dict[keyword]['pos']) and (len(keyword_dict[keyword]['comp']) > 0):
                 data, location = extract_comp(keyword_dict[keyword])
                 questions.append(qqgen.askCompActivityQ(keyword, data, location))
 
@@ -108,7 +108,7 @@ def main():
                 questions.append(qqgen.askDateQ(date))
 
             # if the verb is in the form of ing
-            if 'verb-ing' in keyword_dict[keyword]['pos']:
+            if 'VBG' in keyword_dict[keyword]['pos']:
                 questions.append(qqgen.askActivityQ(keyword))
 
             # if the keyword is a food related word:
