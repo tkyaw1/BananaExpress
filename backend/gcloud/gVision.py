@@ -69,9 +69,8 @@ def gcloudFaces(imagePath):
 # def gcloudLandmarks():
     #todo
 def main():
-    pass
-    # gcloudLabels(image)
-    # gcloudFaces(image)
+    gcloudLabels(image)
+    gcloudFaces(image)
 
 if __name__ == "__main__":
     main()

@@ -23,8 +23,14 @@ def get_address(lat, lon):
     response = requests.get(url=url)
     data = response.json()
     # formatted_address = data['results'][0]['formatted_address']
-    city = data['results'][0]['address_components'][2]["short_name"]
-    state = data['results'][0]['address_components'][5]["short_name"]
+    city = ''
+    state = ''
+    if len(data['results'][0]['address_components']) > 2  {
+        city = data['results'][0]['address_components'][2]["short_name"]
+    }
+    if len(data['results'][0]['address_components']) > 4  {
+        state = data['results'][0]['address_components'][4]["short_name"]
+    }
 
     loc_prompt = "in " + city + ", " + state
     return loc_prompt
@@ -131,8 +137,6 @@ class FancyDateTimeDelta(object):
         return ", ".join(fmt) + " ago"
 
 def getTimeOfDay(hour): # the hour [24 hr time] of the photo was taken
-    print("the hour is!!! " + str(hour))
-
     if (22 <= hour < 24 or 0 <= hour < 4):
         return 'in the late evening'
     elif 4 <= hour < 7:

@@ -57,6 +57,7 @@ app.locals.keyword_dict = {
     }
 }
 
+
 app.locals.corpus = {
     'corpus': [
         'test',
@@ -65,6 +66,8 @@ app.locals.corpus = {
         // ['block's text', 'block's text']
     ]
 }
+
+app.locals.storedBlocks = []
 
 app.locals.dashboards = {
     '9-14-2018': {
@@ -75,18 +78,18 @@ app.locals.dashboards = {
         'mood': 'grinSweat'
     },
     '9-15-2018': {
-        'temperature': 80,
+        'temperature': 75,
         'steps': 8000,
-        'sleep': '9 hr 30 min',
+        'sleep': '7 hr 30 min',
         'weather': 'lightning',
         'mood': 'grinSweat'
     },
     '9-16-2018': {
-        'temperature': 80,
-        'steps': 8000,
-        'sleep': '9 hr 30 min',
-        'weather': 'lightning',
-        'mood': 'grinSweat'
+        'temperature': 61,
+        'steps': 4000,
+        'sleep': '0 hr 0 min',
+        'weather': 'sunny',
+        'mood': 'tired'
     }
 }
 
@@ -115,11 +118,18 @@ app.get('/mobile/images/:id', (req, res) => {
     // send to google cloud vision
     console.log('received req')
     const current_dict = JSON.stringify(app.locals.keyword_dict);
-    const url = 'https://00e9e64bac3ec45fbf7351076a5d0cedd00fe559982aa97a0a-apidata.googleusercontent.com/download/storage/v1/b/project-tao/o/kastanByLake.jpg?qk=AD5uMEtMK82qMa5XXRp_4c2pmibzF18BrsTZ2FPw658SV_tpaz8Vh6KmnfxascAWW4KRW0f9L2iqwgbLl7oZZJUyerwSDZlGSreEGXtwqUh8ni_E3hgh7i_qr_l6cL67f5FZvX9E_Tyc7stT8LGHJMiHoSLRpC_SYdFgMCMlJ5UIGTh39Rw03pIb2pxciULJ2CXBU93P_VLua0nc4gKBDhWWlBJPg9wVEuZcmyoMVPGCVjpdh32ima2dxc-crIWpoS-WO_6fYODPKZVqTh6fLWSqLLDbeKPSqpQwUiaNO_uInwbA1PZuNljBV1TDRXVg-YQRzPqbXULH24XmnxKPAOp9sMwvlmvhg15AQBUW2NPfrT_okHYyD3yPo0HD_mM4CfTWhmViDyY_dCSLLtoSAEsMCzq5v9NKEH_9KfGnDVf0Z4GxhlP22Evk5Ey_DLJVfOrSZrkNlSgLspzfviG50xi89TJfpPmzsMpRRH0qORH3ARGkN8sdHxZXX71tagb6wE5XhLS6JcEmumUrXOs0zYjP_soNHivFayzMW2mLN9bxbeOtxGYhfsY7U4HWpDjDDNzi8J-1E9mTIhoaoRaAndCph3AG8g1gi1VHNWf6I2RrMH4tcpXsQaWqNffnasL6zat3LhsZ7XLk7K8mFQbofYYWiqAbSlsYsnYcTimXJSBvK5bST2BLwPjAo_GTV9AuNWVOTk-KNKJ9xt-rtesbJ0lG6Z45cf2yrSGcAf1DuST7DZfGEMMGDpoGLStmZFR6dEyQ3Og7NvyZ'
-    const pythonProcess = spawn('python', ["gcloud/im2Prompt.py", url, current_dict]);
+    // console.log(current_dict)
+    const url = 'https://storage.googleapis.com/project-tao/kastanByLake.jpg'
+    //  console.log(url)
+    const pythonProcess = spawn('python2', ["gcloud/im2Prompt.py", url, current_dict]);
     pythonProcess.stdout.on('data', (data) => {
-        console.log(data.toString('utf8'))
-        res.send({ 'Express': 'Hello!' })
+        var parsed = JSON.parse(data.toString())
+        console.log(parsed)
+        addImageBlock(parsed)
+        res.send({
+            'generated_block': data.toString() 
+        })
+        console.log('added new image block!')
     })
 })
 app.get('/mobile/location/:id', (req, res) => {
@@ -151,8 +161,25 @@ app.get('/client/prompts/:id', (req, res) => {
     res.send({ prompts: prompts});
 })
 
+app.post('/client/sentiments/:id', (req, res) => {
+    // user sends text, send back list of prompts
+    console.log(req.body.rawText)
+
+    const pythonProcess = spawn('python', ["sentiment_analysis.py", app.locals.keyword_dict, req.body.rawText]);
+    pythonProcess.stdout.on('data', (data) => {
+        // Do something with the data returned from python script
+        // var textChunk = data.toString('utf8');
+        
+        console.log(data.toString())
+        res.send({ prompts: data.toString() });
+    });
+    let day = 'test'
+    let prompts = app.locals.prompts[day]
+    // console.log('sending prompts back', prompts)
+})
+
 // routes for web app
-app.get('/client/text/:id', (req, res) => {
+app.post('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
     console.log(req.body.newSentence)
     const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.body.newSentence]);
@@ -173,7 +200,7 @@ app.get('/client/text/:id', (req, res) => {
         // console.log(mergedPrompts)
         req.app.locals.prompts[day] = [...new Set(mergedPrompts)]
         // var textChunk = data.toString('utf8');
-        res.send({ prompts: app.locals.prompts[day] });
+        res.send({ prompts: app.locals.prompts[day]});
     });
     // console.log('new prompts: ', newPrompts);
 })
@@ -184,6 +211,7 @@ app.get('/client/blocks/:id', (req, res) => {
     // console.log('received block request!')
     if (req.params.id == 'reset') {
         app.locals.hasNewBlocks = true
+        // app.locals.storedBlocks = []
         app.locals.prompts = {
             'test': ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
         }
@@ -191,8 +219,10 @@ app.get('/client/blocks/:id', (req, res) => {
     const hasNewBlocks = app.locals.hasNewBlocks
     app.locals.hasNewBlocks = false
     // console.log(hasNewBlocks)
+    var blocks = app.locals.storedBlocks
+    blocks = blocks.concat([createRockClimbingBlock(), createFitbitBlock()])
     if (hasNewBlocks) {
-        res.send({ blocks: [createRockClimbingBlock(), createFitbitBlock()], hasNewBlocks: hasNewBlocks });
+        res.send({ blocks: blocks, hasNewBlocks: hasNewBlocks });
         console.log('sent block back')
     }
 })
@@ -218,7 +248,7 @@ function createMiniBlockFromType(type, data) {
                     "type": type,
                     "data": {
                         "src": data,
-                        "emojis": "🧗‍♂️🌲",
+                        "emojis": "🌲",
                         "mood": "😀"
                     }
                 }
@@ -238,6 +268,16 @@ function createMiniBlockFromType(type, data) {
             ]
         }
     }
+}
+
+
+function addImageBlock(imageDict) {
+    let timestamp = { 'type': 'timestamp', 'data': imageDict.timestamp }
+    let image = { 'type': 'image', 'data': imageDict.image }
+    let imagePrompt = { 'type': 'imagePrompt', 'data': imageDict.imagePrompt }
+    let caption = { 'type': 'caption', 'data': imageDict.caption.slice(0, 1).toUpperCase() + imageDict.caption.slice(1) }
+    let block = [timestamp, caption, image, imagePrompt]
+    app.locals.storedBlocks.push(createBlockFrom(block))
 }
 
 function createFitbitBlock() {

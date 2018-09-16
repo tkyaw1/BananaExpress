@@ -83,7 +83,7 @@ def main():
 
     capt = captionImage(photo_gcloud_url)
     payload = {
-        'timestamp': time_12hr_str, 
+        'timestamp': time_12hr_str.lower(), 
         'image':photo_gcloud_url,
     }
 
@@ -121,6 +121,7 @@ def captionImage(url):
 def tokenizeAndTag(sentence):
     tokens = nltk.word_tokenize(sentence)
     tagged = nltk.pos_tag(tokens)
+    print("tagged", tagged)
     return tagged
 
 def populateDict(tagged, keywords, location, date, blockType):
