@@ -124,7 +124,7 @@ def populateDict(tagged, dict, location, date, type):
                             "pos": pos,
                             "date": [date],
                             "type": type,
-                            "locationAndDate": locationAndDate}
+                            "comp": locationAndDate}
         else:
             dict[keyword]["location"].append(location)
             dict[keyword]["date"].append(date)
