@@ -22,7 +22,6 @@ render(
 )
 
 if (module.hot) {
-    console.log(store.getState())
     module.hot.accept('./App', () => {
         const NextApp = require('./App').default
         render(
