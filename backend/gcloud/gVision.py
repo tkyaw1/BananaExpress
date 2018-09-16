@@ -66,10 +66,36 @@ def gcloudFaces(imagePath):
     #     print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
     #     print(face.anger_likelihood)
 
+def gcloudLandmarks(path):
+    """Detects landmarks in the file."""
+    client = vision.ImageAnnotatorClient()
+
+    with io.open(path, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.types.Image(content=content)
+
+    response = client.landmark_detection(image=image)
+    landmarks = response.landmark_annotations
+    print('Landmarks:')
+    if len(landmarks) >= 1:
+        print( landmarks[0].description)
+        return landmarks[0].description
+    else:
+        return False
+
+    # for landmark in landmarks:
+    #     print(landmark.description)
+    #     for location in landmark.locations:
+    #         lat_lng = location.lat_lng
+    #         print('Latitude {}'.format(lat_lng.latitude))
+    #         print('Longitude {}'.format(lat_lng.longitude))
+
 # def gcloudLandmarks():
     #todo
 def main():
     pass
+    # gcloudLandmarks('../resources/sadEiffel.jpg')
     # gcloudLabels(image)
     # gcloudFaces(image)
 

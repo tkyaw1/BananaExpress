@@ -3,6 +3,7 @@ import { Button, Segment, Image, Card, Header, Divider } from 'semantic-ui-react
 import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import { bindActionCreators } from 'redux'
+import _ from 'lodash';
 
 import fitbit_logo from '../assets/fitbit_logo.png'
 
@@ -25,6 +26,8 @@ class Block extends Component {
         this.state = {
             value: Value.fromJSON(valueJSON),
             hasImage: false,
+            userSentences: [],
+            newSentenceAvailable: false
         }
     }
 
@@ -126,15 +129,47 @@ class Block extends Component {
         }
     }
 
+    getJournalText = (nodes) => {
+        var sentences = []
+        nodes.forEach((node) => {
+            // if (node.type === 'paragraph') {
+            //     var test = _.flatMapDeep(node.nodes)
+            //     // console.log(test)
+            //     // node.nodes.map((text) => {
+            //     //     let leaves = text.leaves
+            //     //     leaves.map((leaf) => {
+            //     //         console.log(leaf.text)
+            //     //     })
+            //     // })
+            // }
+            sentences.push(node.text)
+        })
+        return sentences
+    }
+
     // On change, update the app's React state with the new editor value.
     onChange = ({ value }) => {
+        // console.log(value.document.nodes.forEach)
+        const paragraph = value.document.text
+        if (paragraph.length > 200) {
+            console.log('sending paragraph')
+            this.props.sendParagraph()
+        }
         this.setState({ value })
     }
 
     onKeyDown = (e, change) => {
-        if (!e.ctrlKey) { return }
+        if (!e.ctrlKey) { 
+            this.props.isTyping()
+            if (e.key === '.' || e.key === '!' || e.key === '?') {
+                let sentences = this.getJournalText(this.state.value.document.nodes)
+                let mostRecentSentence = sentences[sentences.length - 1] + e.key
+                this.setState({ userSentences: sentences })
+                this.props.sentenceReady(mostRecentSentence)
+            }
+            return
+        }
         e.preventDefault()
-
         switch (e.key) {
             case 'b': {
                 change.addMark('bold')
@@ -163,6 +198,7 @@ class Block extends Component {
                         schema={this.schema}
                         style={{ paddingBottom: editorBottom }}
                     />
+                    {this.state.userSentences.map((sentence) => {sentence})}
                 </Segment>
             </div>
         );

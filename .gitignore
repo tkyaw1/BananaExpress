@@ -1,4 +1,6 @@
 node_modules/
+fromFrontEnd/
+
 *.pyc
 
 # Jupyter Notebook

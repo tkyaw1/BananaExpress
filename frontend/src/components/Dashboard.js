@@ -9,6 +9,9 @@ import { connect } from 'react-redux'
 import steps from '../assets/footsteps.svg'
 import bed from '../assets/bed.svg'
 import lightning from '../assets/cloud-lightning.svg'
+import sun from '../assets/sun.svg'
+import grinSweat from '../assets/grin-beam-sweat.svg'
+import tired from '../assets/tired.svg'
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     menuClicked: (to) => {
@@ -21,21 +24,26 @@ var colors = ['#5f49cf', '#66cc91', '#139e80', '#50a6b1', '#f293d7', '#c56aab']
 const getWeatherIcon = (string) => {
     switch (string) {
         case 'lightning': return lightning;
+        case 'sunny': return sun;
+    }
+}
+
+const getMoodIcon = (string) => {
+    switch (string) {
+        case 'grinSweat': return grinSweat;
+        case 'tired': return tired;
     }
 }
 
 class Dashboard extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            temperature: 70,
-            steps: 8000,
-            sleep: '7 hr 30 min',
-            weather: 'lightning'
-        }
+        this.state = this.props
     }
 
     render() {
+        this.state = this.props
+        console.log(this.state.steps)
         // const color = colors[Math.floor(Math.random() * colors.length)];
         return (
             <div className='dashboard'>
@@ -55,6 +63,9 @@ class Dashboard extends Component {
                                 </Header>
                             </Grid.Column>
                             <Grid.Column>
+                                <Header textAlign='center' style={{ lineHeight: '2em' }}>
+                                    <Image size='tiny' style={{ float: 'left', left: '40%', width: '30px', height: '30px' }} src={getMoodIcon(this.state.mood)} />
+                                </Header>
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>

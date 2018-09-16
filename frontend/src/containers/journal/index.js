@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Divider, Loader, Button, Grid, Segment } from 'semantic-ui-react'
+import { Header, Divider, Loader, Button, Grid, Segment, Card} from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import { bindActionCreators } from 'redux'
@@ -7,64 +7,194 @@ import { bindActionCreators } from 'redux'
 import Block from '../../components/Block'
 import Dashboard from '../../components/Dashboard'
 
+import BubbleParticles from '../../components/Particles';
+
+import left_wing from '../../assets/logo_left_half.svg'
+import right_wing from '../../assets/logo_right_half.svg'
+
+var cardColors = ['orange', 'yellow', 'olive', 'teal', 'blue', 'violet', 'purple', 'pink', 'grey']
+
 const mapDispatchToProps = dispatch => bindActionCreators({
     menuClicked: (to) => {
         return push('/' + to)
     }
 }, dispatch)
 
-function mapJSONToBlock(block, index) {
+function generateColor() {
+    if (cardColors.length == 0) {
+        cardColors = ['orange', 'yellow', 'olive', 'teal', 'blue', 'violet', 'purple', 'pink', 'grey']
+    }
+    const color = cardColors[Math.floor(Math.random() * cardColors.length)];
+    cardColors.splice(cardColors.indexOf(color), 1)
+    return color
+}
+
+function mapPromptsToCards(prompt, index) {
     // const hasLink = true
+    
     return (
-        <Block valueJSON={block} />
+        <Card className='promptCard' style={{animationDelay: '' + index/(index+1) + 's'}} color='teal' fluid header={prompt}></Card>
     );
 }
 
 class Journal extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
+            hasNewSentence: true,
+            prompts: [],
+            date: '9-16-2018',
+            dashboard: {
+                temperature: 0,
+                steps: 0,
+                sleep: '0 hr 0 min',
+                weather: 'lightning',
+                mood: 'grinSweat'
+            },
+            isTyping: false,
         }
     };
     
     componentDidMount() {
         var handle = setInterval(this.awaitBlocks, 1000);
         var handle2 = setInterval(this.awaitPrompts, 1000);
+        var handle3 = setInterval(this.setupDashboard, 5000);
         this.setState({
-            handle: handle
+            handle: handle,
+            handle2: handle2,
+            handle3: handle3,
+            initialFetch: true
         })
     }
+
+    componentWillUnmount() {
+        clearInterval(this.state.handle)
+        clearInterval(this.state.handle2)
+        clearInterval(this.state.handle3)
+    }
+
+    setupDashboard = () => {
+        this.fetchDashboardData()
+            .then(res => {
+                console.log('received dashbboard response')
+                console.log(res.dashboard)
+                this.setState({
+                    dashboard: res.dashboard
+                })
+            })
+            .catch(err => console.log(err));
+    }
+
+    fetchDashboardData = async () => {
+        // const url = 'https://lotus-journal.herokuapp.com/blocks/test';
+        var url = '/client/dashboard/' + this.state.date
+        // if (this.state.initialFetch) {
+        //     url = '/client/blocks/reset'
+        // }
+        console.log('sent prompt fetch!')
+
+        const response = await fetch(url);
+        const body = await response.json();
+
+        if (response.status !== 200) throw Error(body.message);
+
+        return body;
+    };
 
     awaitBlocks = () => {
         this.callApi()
             .then(res => {
-                const blocks = res.blocks
-                console.log(blocks)
-                this.setState ({
-                    testBlocks: blocks
-                })
+                const { blocks, hasNewBlocks } = res
+                console.log('received block response')
+                if (hasNewBlocks) {
+                    this.setState ({
+                        blocks: blocks
+                    })
+                }
             })
             .catch(err => console.log(err));
     }
 
     awaitPrompts = () => {
-        this.addPrompt()
+        this.fetchPrompts()
             .then(res => {
-                const prompts = res.prompts
-                console.log(prompts)
+                console.log('received response!')
+                const newPrompts = res.prompts
+                console.log(newPrompts)
                 this.setState({
-                    prompts: prompts
+                    prompts: newPrompts
                 })
             })
             .catch(err => console.log(err));
     }
 
+    fetchPrompts = async () => {
+        // const url = 'https://lotus-journal.herokuapp.com/blocks/test';
+        var url = '/client/prompts/test'
+        // if (this.state.initialFetch) {
+        //     url = '/client/blocks/reset'
+        // }
+        console.log('sent prompt fetch!')
 
+        const response = await fetch(url);
+        const body = await response.json();
+
+        if (response.status !== 200) throw Error(body.message);
+
+        return body;
+    };
+
+    awaitSentiments = (paragraph) => {
+        this.fetchSentiments()
+            .then(res => {
+                console.log('received response!')
+                const sentiments = res.sentiments
+                console.log(sentiments)
+                this.setState({
+                    sentiments: sentiments
+                })
+            })
+            .catch(err => console.log(err));
+    }
+
+    fetchSentiments = async (paragraph) => {
+        var url = '/client/sentiments/test'
+
+        console.log('sent prompt fetch!')
+
+        const response = await fetch(url);
+        const body = await response.json();
+
+        if (response.status !== 200) throw Error(body.message);
+
+        return body;
+    };
+
+    mapJSONToBlock = (block, index) => {
+        if (this.state.blocks && this.state.blocks.length == index + 1) {
+            return <Block isTyping={this.handleUserTyping} sentenceReady={this.handleSentence} valueJSON={block} />
+        }
+        return (
+            <li key={index}><Block isTyping={this.handleUserTyping} sendParagraph={this.handleSentence} sentenceReady={this.handleSentence} valueJSON={block} /></li>
+        );
+    }
+
+    handleUserTyping = () => {
+        this.setState({
+            isTyping: true
+        })
+    }
 
     callApi = async () => {
-        const server_url = 'https://lotus-journal.herokuapp.com/blocks/test';
-        const response = await fetch('/client/blocks/test');
+        // const server_url = 'https://lotus-journal.herokuapp.com/blocks/test';
+        var url = '/client/blocks/test'
+        if (this.state.initialFetch) {
+            url = '/client/blocks/reset'
+            this.setState({
+                initialFetch: false
+            })
+        }
+        const response = await fetch(url);
         const body = await response.json();
 
         if (response.status !== 200) throw Error(body.message);
@@ -72,20 +202,50 @@ class Journal extends Component {
         return body;
     };
 
-    addPrompt = async () => {
-        const server_url = 'https://lotus-journal.herokuapp.com/blocks/test';
-        const response = await fetch('/client/text/test');
+    handleSentence = (sentence) => {
+        this.sendNewSentence(sentence)
+            .then(res => {
+                console.log('received response!')
+                const newPrompts = res.prompts
+                console.log(newPrompts)
+                this.setState({
+                    prompts: newPrompts
+                })
+            })
+            .catch(err => console.log(err));
+    }
+
+    sendNewSentence = async (sentence) => {
+        // this.setState({
+        //     hasNewSentence: false,
+        // })
+        console.log(sentence)
+        const request = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                newSentence: sentence
+            })
+        }
+        const response = await fetch('/client/text/test', request);
         const body = await response.json();
 
         if (response.status !== 200) throw Error(body.message);
 
         return body;
     };
+
+
 
     render() {
-        const blocks = this.state.testBlocks
-        const journalEntry = blocks ? blocks.map(mapJSONToBlock): <Loader className='block-loading' active={true}><Header>Loading your journal...</Header></Loader>
-        const prompts = this.state.prompts? this.state.prompts.map((item, index) => item) : ''
+        const isTyping = this.state.isTyping
+        const blocks = this.state.blocks
+        const journalEntry = blocks ? blocks.map(this.mapJSONToBlock): <Loader className='block-loading' active={true}><Header>Loading your journal...</Header></Loader>
+        const prompts = this.state.prompts? this.state.prompts.map(mapPromptsToCards) : ''
+        const dashboard = this.state.dashboard
         return (
             <div className="App-intro">
                 <Segment className='day-segment'>
@@ -95,18 +255,26 @@ class Journal extends Component {
                     <div>
                         <Grid centered columns='three'>
                             <Button basic circular style={{ marginTop: '1.5%', width: '40px', height: '40px' }} icon='chevron left' floated='left' id='left' />
-                            <Header size='large' style={{ paddingBottom: '3%' }} content='Sunday, September 9' />
+                            <Header size='large' style={{ paddingBottom: '3%' }} content='Saturday, September 16' />
                             <Button basic circular style={{ marginTop: '1.5%', width: '40px', height: '40px' }} icon='chevron right' floated='right' id='right' />
                         </Grid>
                     </div>
-                    <Dashboard />
-                    {/* <ul>
-                        <li><Block /></li>
+                    <Dashboard {...dashboard}/>
+                    {/* 
+                        <Block /></li>
                         <li><Block /></li>
                     </ul> */}
-                    {journalEntry}
+                    <ul>{journalEntry}</ul>
                 </Segment>
-                <Segment className='suggestions-box'>
+                <Segment hidden={!isTyping} className='suggestions-box'>
+                    <div className="ui center image butterfly_container">
+                        <var className="rotate3d">
+                            <figure className="butterfly">
+                                <img className="wing left" src={left_wing} />
+                                <img className="wing right" src={right_wing} />
+                            </figure>
+                        </var>
+                    </div>
                     <Header>Prompts</Header>
                     <Divider />
                     {prompts}
