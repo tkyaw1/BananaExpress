@@ -1,7 +1,7 @@
 import sys
 import ast
 from random import randint
-from questions import QuestionGeneration
+from questions_backend import QuestionGeneration
 
 """
     argv[1] : keyword dictionary
@@ -46,20 +46,21 @@ def main():
     questions = []
     # extract keywords
     # keywords = extract_keywords(new_text)
-    keywords = 'swim'
+    keywords = ['swim']
     for keyword in keywords:
         if keyword in keyword_dict: # the keyword exists in the dictionary already
             date = extract_date_location(keyword_dict[keyword], 'date')
 
             location = extract_date_location(keyword_dict[keyword], 'location')
             questions.append(qqgen.askLocationQ(location))
+            questions.append(qqgen.askLocationQ(location))
+            questions.append(qqgen.askLocationQ(location))
 
-            if len(keyword_dict['activity']) != 0:
-                questions.append(qqgen.askActivityQ(keyword_dict['activity']))
+            # if len(keyword_dict['activity']) != 0:
+                # questions.append(qqgen.askActivityQ(keyword_dict['activity']))
 
-
+    # print keyword_dict['swim']
     print questions
-    print keyword_dict[keywords]
     sys.stdout.flush()
 
 if __name__ == '__main__':
