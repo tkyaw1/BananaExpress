@@ -25,12 +25,10 @@ def get_address(lat, lon):
     # formatted_address = data['results'][0]['formatted_address']
     city = ''
     state = ''
-    if len(data['results'][0]['address_components']) > 2  {
+    if (len(data['results'][0]['address_components']) > 2 ):
         city = data['results'][0]['address_components'][2]["short_name"]
-    }
-    if len(data['results'][0]['address_components']) > 4  {
+    if (len(data['results'][0]['address_components']) > 4):
         state = data['results'][0]['address_components'][4]["short_name"]
-    }
 
     loc_prompt = "in " + city + ", " + state
     return loc_prompt
