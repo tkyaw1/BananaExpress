@@ -81,7 +81,6 @@ def main():
     print("{'type': 'caption', 'data':" + capt + "}, ")
     print("{'type': 'image', 'data':" + photo_gcloud_url + "}, ")
 
-
     labels_list = gVision.gcloudLabels(loc_photo_path)
     group_bool = gVision.gcloudFaces(loc_photo_path)
 
