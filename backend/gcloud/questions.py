@@ -1,3 +1,4 @@
+import random
 class QuestionGeneration(object):
     def __init__(self):
         pass
