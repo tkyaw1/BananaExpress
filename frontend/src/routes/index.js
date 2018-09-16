@@ -13,7 +13,7 @@ const routes = [
     main: () => <Home/>
     },
     {
-    path: '/',
+    path: '/journal',
     exact: true,
     sidebar: () => <div>Journal</div>,
     main: () => <Journal/>

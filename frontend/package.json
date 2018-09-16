@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "concurrently": "^4.0.1",
     "history": "^4.7.2",
     "immutable": "^3.8.2",
     "react": "^16.4.2",
@@ -25,5 +26,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "proxy": "http://0.0.0.0:5000/"
 }

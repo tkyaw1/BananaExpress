@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
+const spawn = require("child_process").spawn;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -18,12 +19,29 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.locals.keyword_dict = {
+    'keyword': [
+        //dates 
+    ],
+}
+
+app.locals.corpus = {
+    'corpus': [
+        //list of all the text
+        // ['block's text', 'block's text']
+
+    ]
+}
+
+// i pass keyword_dict, corpus, current_text at once to Henry/python
+// i get back prompts
+
 app.get('/', (req, res) => {
     // while (!detected) {
     //     continue
     // }
-
-    res.send({ 'Express': 'Hello!' })
+    console.log('received get req!!')
+    res.send({'Express': 'Hello!'})
 });
 
 // routes for phone
@@ -43,11 +61,22 @@ app.get('/mobile/location/:id', (req, res) => {
 // routes for web app
 app.get('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
+    const pythonProcess = spawn('python', ["question_generation.py", app.locals.keyword_dict, app.locals.corpus, req.params.id]);
+    pythonProcess.stdout.on('data', (data) => {
+        // Do something with the data returned from python script
+        var textChunk = data.toString('utf8');
+        console.log(textChunk)
+        res.send({ prompts: [textChunk] });
+    });
 })
 
 app.get('/client/blocks/:id', (req, res) => {
     // user sends hello ping, server sends back a block if there is data available
     // we'll use an id to differentiate entries for different days
+    console.log('received block request!')
+    console.log(req.params.id)
+    res.send({blocks: [createJsonBlock()]});
+    console.log('sent block back')
 })
 
 app.get('/client/fitbit/:id', (req, res) => {
@@ -69,6 +98,45 @@ function queryCloudVision() {
     // if has landmark, add to backend user tag dictionary
 
     //
+}
+
+function createJsonBlock(type) {
+    var type = 'heading'
+    var text = 'Your First Header'
+    return {
+        "document": {
+            "nodes": [
+                {
+                    "object": "block",
+                    "type": type,
+                    "nodes": [
+                        {
+                            "object": "text",
+                            "leaves": [
+                                {
+                                    "text": text
+                                }
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "object": "block",
+                    "type": 'timestamp',
+                    "nodes": [
+                        {
+                            "object": "text",
+                            "leaves": [
+                                {
+                                    "text": 'timestamp'
+                                }
+                            ]
+                        }
+                    ]
+                }, 
+            ]
+        }
+    } 
 }
 
 // im2txt

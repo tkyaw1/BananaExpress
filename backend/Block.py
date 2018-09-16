@@ -1,7 +1,7 @@
 """ This is the class for blocks
 """
 import requests
-
+import json
 
 class Block:
     def __init__(self):
@@ -13,6 +13,30 @@ class Block:
         self.caption = "" # generated from the image to text and then the ad lib nlp model
         self.type = "" # block types: photo, fitbit, location, etc.
         self.keywords = []
+
+    def __str__(self):
+        return str({
+            "photo": self.photo,
+            "prompt": self.prompt,
+            "text": self.text,
+            "timestamp": self.timestamp,
+            "emoji": self.emoji,
+            "caption": self.caption,
+            "type": self.type,
+            "kewords": self.keywords
+        })
+
+    def return_json(self):
+        return str({
+            "photo": self.photo,
+            "prompt": self.prompt,
+            "text": self.text,
+            "timestamp": self.timestamp,
+            "emoji": self.emoji,
+            "caption": self.caption,
+            "type": self.type,
+            "kewords": self.keywords
+        })
 
     def set_photo(self, photo):
         self.photo = photo
