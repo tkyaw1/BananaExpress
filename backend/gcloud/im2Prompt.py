@@ -118,12 +118,17 @@ def populateDict(tagged, dict, location, date, type):
             activity = True
         locationAndDate=None
         if location != None and date != None:
-            locationAndDate = [location, date]
-        dict[keyword] = {"location": location,
-                        "pos": pos,
-                        "date": date,
-                        "type": type,
-                        "locationAndDate": locationAndDate}
+            locationAndDate = [date, location]
+        if keyword not in dict:
+            dict[keyword] = {"location": [location],
+                            "pos": pos,
+                            "date": [date],
+                            "type": type,
+                            "locationAndDate": locationAndDate}
+        else:
+            dict[keyword]["location"].append(location)
+            dict[keyword]["date"].append(date)
+
 
     group = None
     food = None
