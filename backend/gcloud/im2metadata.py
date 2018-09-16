@@ -18,7 +18,7 @@ def get_address(lat, lon):
     base_url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='
     url = base_url + str(lat) + ',' + str(lon)
     url = url + '&key=' + API_KEY
-    print(url)
+    # print(url)
 
     response = requests.get(url=url)
     data = response.json()
@@ -153,7 +153,7 @@ def pillowImageToAddress(image):
 
 def im2date_time_addr(photoPath):
     # GET THE ADDRESS
-    image = Image.open(photoPath) 
+    image = Image.open(photoPath)
     exif_data = get_exif_data(image)
     lat, lon = get_lat_lon(exif_data)
     address_nl = get_address(lat, lon)
@@ -178,7 +178,7 @@ def im2date_time_addr(photoPath):
     return date_str, date_nl, time_nl, time_12hr_str, address_nl
 
 
-# """
+"""
 if __name__ == "__main__":
 
     image = Image.open("../resources/cloudCity.jpg") 
@@ -201,4 +201,4 @@ if __name__ == "__main__":
     # print("Running " + str(address) + " " + time_of_day)
     # print (get_lat_lon(exif_data))
 
-# """
+"""

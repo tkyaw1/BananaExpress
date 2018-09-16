@@ -22,35 +22,35 @@ app.use(cors(corsOptions));
 app.locals.keyword_dict = {
     'surfing': {
         'date': ["Aug-15-2018", "Sep-16-2018"],
-        'pos': "verb-ing",
+        'pos': "VBG",
         'location': ['Malibu', 'Hawaii'],
         'type': "activity",
         'comp': [["Aug-15-2018",'Malibu'], ["Sep-16-2018", "Hawaii"]]
     },
     'running': {
         'date': ["Aug-02-2018"],
-        'pos': "verb-ing",
+        'pos': "VBG",
         'location':['Swarthmore'],
         'type': "activity",
         'comp': [["Aug-02-2018", "Swarthmore"]]
     },
     'Malibu': {
         'date': ["Aug-15-2018"],
-        'pos': "noun",
+        'pos': "NN",
         'location' : ['Malibu'],
         'type': 'location',
         'comp': [["Aug-15-2018", "Malibu"]]
     },
     'Swarthmore': {
         'date': ['Aug-02-2018'],
-        'pos': 'noun',
+        'pos': 'NN',
         'location': ['Swarthmore'],
         'type': 'location',
         'comp': [["Aug-02-2018", "Swarthmore"]]
     },
     'Hawaii': {
         'date': ['Sep-16-2018'],
-        'pos': 'noun',
+        'pos': 'NN',
         'location' : ['Hawaii'],
         'type': 'location',
         'comp':[["Sep-16-2018", "Hawaii"]]
@@ -113,7 +113,6 @@ app.get('/mobile/images/:id', (req, res) => {
     // send to google cloud vision
     console.log('received req')
     const current_dict = JSON.stringify(app.locals.keyword_dict);
-    console.log(current_dict)
     const url = 'https://00e9e64bac3ec45fbf7351076a5d0cedd00fe559982aa97a0a-apidata.googleusercontent.com/download/storage/v1/b/project-tao/o/kastanByLake.jpg?qk=AD5uMEtMK82qMa5XXRp_4c2pmibzF18BrsTZ2FPw658SV_tpaz8Vh6KmnfxascAWW4KRW0f9L2iqwgbLl7oZZJUyerwSDZlGSreEGXtwqUh8ni_E3hgh7i_qr_l6cL67f5FZvX9E_Tyc7stT8LGHJMiHoSLRpC_SYdFgMCMlJ5UIGTh39Rw03pIb2pxciULJ2CXBU93P_VLua0nc4gKBDhWWlBJPg9wVEuZcmyoMVPGCVjpdh32ima2dxc-crIWpoS-WO_6fYODPKZVqTh6fLWSqLLDbeKPSqpQwUiaNO_uInwbA1PZuNljBV1TDRXVg-YQRzPqbXULH24XmnxKPAOp9sMwvlmvhg15AQBUW2NPfrT_okHYyD3yPo0HD_mM4CfTWhmViDyY_dCSLLtoSAEsMCzq5v9NKEH_9KfGnDVf0Z4GxhlP22Evk5Ey_DLJVfOrSZrkNlSgLspzfviG50xi89TJfpPmzsMpRRH0qORH3ARGkN8sdHxZXX71tagb6wE5XhLS6JcEmumUrXOs0zYjP_soNHivFayzMW2mLN9bxbeOtxGYhfsY7U4HWpDjDDNzi8J-1E9mTIhoaoRaAndCph3AG8g1gi1VHNWf6I2RrMH4tcpXsQaWqNffnasL6zat3LhsZ7XLk7K8mFQbofYYWiqAbSlsYsnYcTimXJSBvK5bST2BLwPjAo_GTV9AuNWVOTk-KNKJ9xt-rtesbJ0lG6Z45cf2yrSGcAf1DuST7DZfGEMMGDpoGLStmZFR6dEyQ3Og7NvyZ'
     const pythonProcess = spawn('python', ["gcloud/im2Prompt.py", url, current_dict]);
     pythonProcess.stdout.on('data', (data) => {
@@ -146,7 +145,7 @@ app.get('/client/prompts/:id', (req, res) => {
         }
     }
     let prompts = app.locals.prompts[day]
-    console.log(prompts)
+    // console.log(prompts)
     res.send({ prompts: prompts});
 })
 
@@ -154,7 +153,7 @@ app.get('/client/prompts/:id', (req, res) => {
 app.get('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
     console.log(req.body.newSentence)
-    const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.params.id]);
+    const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.body.newSentence]);
     let day = 'test'
     var newPrompts = app.locals.prompts[day]
     pythonProcess.stdout.on('data', (data) => {
@@ -167,9 +166,10 @@ app.get('/client/text/:id', (req, res) => {
         strings.pop()
         // dataString = dataString.substring(0, dataString.length-1);
         // console.log(JSON.parse(dataString))
+        console.log(strings)
         let mergedPrompts = newPrompts.concat(strings)
         // console.log(mergedPrompts)
-        req.app.locals.prompts[day] = mergedPrompts
+        req.app.locals.prompts[day] = [...new Set(mergedPrompts)]
         // var textChunk = data.toString('utf8');
         console.log('updating prompts:', app.locals.prompts[day])
         res.send({ prompts: newPrompts });
@@ -191,7 +191,6 @@ app.get('/client/blocks/:id', (req, res) => {
     app.locals.hasNewBlocks = false
     // console.log(hasNewBlocks)
     if (hasNewBlocks) {
-        console.log(createRockClimbingBlock())
         res.send({ blocks: [createRockClimbingBlock()], hasNewBlocks: hasNewBlocks });
         console.log('sent block back')
     }
@@ -231,7 +230,7 @@ function createMiniBlockFromType(type, data) {
 }
 
 function createBlockFrom(block) {
-    var parsedBlock = block.map(miniBlock => { 
+    var parsedBlock = block.map(miniBlock => {
         return createMiniBlockFromType(miniBlock['type'], miniBlock['data'])
     })
 
@@ -267,10 +266,10 @@ function createRockClimbingBlock() {
     let imagePrompt = "How did rock climbing go?"
 
     let block = [
-        {'type': 'timestamp', 'data': timestamp}, 
-        {'type': 'caption', 'data': caption}, 
-        {'type': 'image', 'data': image}, 
-        {'type': 'imagePrompt', 'data': imagePrompt}, 
+        {'type': 'timestamp', 'data': timestamp},
+        {'type': 'caption', 'data': caption},
+        {'type': 'image', 'data': image},
+        {'type': 'imagePrompt', 'data': imagePrompt},
     ]
     return createBlockFrom(block)
 }
