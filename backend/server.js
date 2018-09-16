@@ -20,40 +20,82 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.locals.keyword_dict = {
-    'surfing': {
-        'date': ["Aug-15-2018", "Sep-16-2018"],
+    'fishing': {
+        'date': ["Sep-11-2018", "Sep-16-2018"],
         'pos': "VBG",
-        'location': ['Malibu', 'Hawaii'],
+        'location': ['San Francisco, CA', 'Wenatche, WA'],
         'type': "activity",
-        'comp': [["Aug-15-2018",'Malibu'], ["Sep-16-2018", "Hawaii"]]
+        'comp': [["Sep-11-2018",'San Francisco, CA'], ["Sep-16-2018", "Wenatche, WA"]]
     },
-    'running': {
-        'date': ["Aug-02-2018"],
-        'pos': "VBG",
-        'location':['Swarthmore'],
-        'type': "activity",
-        'comp': [["Aug-02-2018", "Swarthmore"]]
-    },
-    'Malibu': {
-        'date': ["Aug-15-2018"],
+    'bridge': {
+        'date': ["Sep-13-2018", "Sep-16-2018"],
         'pos': "NN",
-        'location' : ['Malibu'],
-        'type': 'location',
-        'comp': [["Aug-15-2018", "Malibu"]]
+        'location': ['San Francisco, CA', 'Wenatche, WA'],
+        'type': "location",
+        'comp': [["Sep-13-2018",'San Francisco, CA'], ["Sep-16-2018", "Wenatche, WA"]]
     },
-    'Swarthmore': {
-        'date': ['Aug-02-2018'],
-        'pos': 'NN',
-        'location': ['Swarthmore'],
-        'type': 'location',
-        'comp': [["Aug-02-2018", "Swarthmore"]]
+    'boat': {
+        'date': ["Sep-13-2018", "Sep-16-2018"],
+        'pos': "NN",
+        'location': ['San Francisco, CA', 'Wenatche, WA'],
+        'type': "activity",
+        'comp': [["Sep-13-2018",'San Francisco, CA'], ["Sep-16-2018", "Wenatche, WA"]]
     },
-    'Hawaii': {
+    'golfing': {
+        'date': ["Sep-13-2018"],
+        'pos': "VBG",
+        'location':['San Francisco, CA'],
+        'type': "activity",
+        'comp': [["Sep-13-2018", "San Francisco, CA"]]
+    },
+    'Golden Gate Bridge': {
+        'date': ["Sep-13-2018"],
+        'pos': "NN",
+        'location':['San Francisco, CA'],
+        'type': "location",
+        'comp': [["Sep-13-2018", "San Francisco, CA"]]
+    },
+    'boating': {
+        'date': ["Sep-14-2018"],
+        'pos': "VBG",
+        'location':['San Francisco, CA'],
+        'type': "activity",
+        'comp': [["Sep-14-2018", "San Francisco, CA"]]
+    },
+    'camping': {
+        'date': ["Sep-15-2018"],
+        'pos': "VBG",
+        'location':['Wenatche, WA'],
+        'type': "activity",
+        'comp': [["Sep-15-2018", "Wenatche, WA"]]
+    },
+    'sunset chasing': {
+        'date': ["Sep-14-2018"],
+        'pos': "VBG",
+        'location':['Big Sur, CA'],
+        'type': "activity",
+        'comp': [["Sep-14-2018", "Big Sur, CA"]]
+    },
+    'San Francisco, CA': {
+        'date': ["Sep-13-2018"],
+        'pos': "NN",
+        'location' : ['San Francisco, CA'],
+        'type': 'location',
+        'comp': [["Sep-13-2018", "San Francisco, CA"]]
+    },
+    'Wenatche, WA': {
         'date': ['Sep-16-2018'],
         'pos': 'NN',
-        'location' : ['Hawaii'],
+        'location': ['Wenatche, WA'],
         'type': 'location',
-        'comp':[["Sep-16-2018", "Hawaii"]]
+        'comp': [["Sep-16-2018", "Wenatche, WA"]]
+    },
+    'Big Sur, CA': {
+        'date': ['Sep-14-2018'],
+        'pos': 'NN',
+        'location' : ['Big Sur'],
+        'type': 'location',
+        'comp':[["Sep-14-2018", "Big Sur, CA"]]
     }
 }
 
@@ -150,7 +192,7 @@ app.get('/mobile/images/:id', (req, res) => {
         console.log(parsed)
         addImageBlock(parsed)
         res.send({
-            'generated_block': data.toString() 
+            'generated_block': data.toString()
         })
         console.log('added new image block!')
     })
@@ -192,7 +234,7 @@ app.post('/client/sentiments/:id', (req, res) => {
     pythonProcess.stdout.on('data', (data) => {
         // Do something with the data returned from python script
         // var textChunk = data.toString('utf8');
-        
+
         console.log(data.toString())
         const sentiments = JSON.parse(data.toString())
         res.send({ sentiments: sentiments });
@@ -309,9 +351,9 @@ function createFitbitBlock() {
     let caption = 'Afternoon Run'
 
     let block = [
-        {'type': 'timestamp', 'data': timestamp}, 
-        {'type': 'caption', 'data': caption}, 
-        {'type': 'fitbit', 'data': ''}, 
+        {'type': 'timestamp', 'data': timestamp},
+        {'type': 'caption', 'data': caption},
+        {'type': 'fitbit', 'data': ''},
     ]
 
     return createBlockFrom(block)
