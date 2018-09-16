@@ -2,14 +2,12 @@ from captionbot import CaptionBot
 import nltk
 import random
 import importlib
+import sys
 
 import im2metadata
 import gVision
-
-# im2metadata = input('./gcloud/im2metadata.py')
-# gVision = input('./gcloud/gVision.py')
-# importlib.import_module(im2metadata )
-# importlib.import_module(gVision )
+import urllib
+import questions
 
 class QuestionGeneration(object):
     def __init__(self):
@@ -46,8 +44,8 @@ class QuestionGeneration(object):
         "Who were you with?"])
 
 def main():
-
-    localPhotoPath = '../resources/groupPhoto.jpg'
+    # localPhotoPath = sys.argv[1]
+    localPhotoPath = '../resources/kastanByLake.jpg'
     date_str, time_nl, address_nl = im2metadata.im2date_time_addr(localPhotoPath)
     # todo: google clout storage (get url)
 
@@ -64,10 +62,11 @@ def main():
     #     tokenizeAndPopulateDict(word, d)
 
 
-def captionImage(url):
+def captionImage(filePath):
     image_url = url
     cBot = CaptionBot()
-    caption = cBot.url_caption(image_url)
+    # caption = cBot.url_caption(image_url)
+    caption = cBot.file_caption(filePath)
     caption = caption.split(" ")[2:]
     caption = " ".join(caption)
     return caption
@@ -95,9 +94,10 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
     elif type == "Food":
         food = True
     print(askQs(location, activity, food, group))
+    sys.stdout.flush()
 
 def askQs(location=None, activity=None, food=None, group=None):
-    qG = QuestionGeneration()
+    qG = questions.QuestionGeneration()
     if location:
         return qG.askLocationQ(location)
     elif group:

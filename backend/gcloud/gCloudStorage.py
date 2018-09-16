@@ -1,13 +1,13 @@
-import logging
-import os
-import cloudstorage as gcs
-import webapp2
-
-from google.appengine.api import app_identity
-
+# import logging
+# import os
+# import cloudstorage as gcs
+# import webapp2
+#
+# from google.appengine.api import app_identity
+from google.cloud import storage
 
 def main():
-    uplaod_blob('project-tao', '../kastanByLake.jpg', 'kastanByLake.jpg')
+    upload_blob('project-tao', '../resources/kastanByLake.jpg', 'kastanByLake.jpg')
     list_blobs('project-tao')
     download_blob
 
@@ -47,3 +47,5 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
         source_blob_name,
         destination_file_name))
 
+
+main()
