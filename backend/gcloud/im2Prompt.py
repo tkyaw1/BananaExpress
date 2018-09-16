@@ -87,9 +87,15 @@ def main():
         'image':photo_gcloud_url,
     }
 
+    # google vision
     labels_list = gVision.gcloudLabels(loc_photo_path)
-
     group_bool = gVision.gcloudFaces(loc_photo_path)
+    landmark = gVision.gcloudLandmarks(loc_photo_path)
+    # if a landmark is recognized, use that instead of location
+    if (landmark != False):
+        address_nl = "in " + str(landmark) + "."
+
+    # caption bot
     capt = captionImage(photo_gcloud_url)
 
     tagged = tokenizeAndTag(capt)
