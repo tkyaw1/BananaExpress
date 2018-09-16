@@ -96,6 +96,14 @@ body {
   margin-bottom: 3%;
 }
 
+.sentimentGraph {
+  float: left;
+  position: fixed;
+  left: 5%;
+  bottom: 5%;
+  stroke-width: 20px;
+}
+
 .particles {
     z-index: -1 !important;
     position: absolute !important;

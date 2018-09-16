@@ -151,9 +151,10 @@ class Block extends Component {
     onChange = ({ value }) => {
         // console.log(value.document.nodes.forEach)
         const paragraph = value.document.text
+        console.log(paragraph.length)
         if (paragraph.length > 200) {
             console.log('sending paragraph')
-            this.props.sendParagraph()
+            this.props.sendParagraph(paragraph)
         }
         this.setState({ value })
     }

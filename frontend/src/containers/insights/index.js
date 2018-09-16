@@ -27,7 +27,7 @@ class Insights extends Component {
         return (
             <div className="App-intro">
                 <Segment className='day-segment'>
-
+                    
                 </Segment> 
             </div>
         );

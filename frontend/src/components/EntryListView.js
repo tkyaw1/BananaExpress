@@ -89,6 +89,10 @@ class EntryListView extends Component {
         this.state = { }
     }
     componentDidMount() {
+        // if (window.location.hash != '') {
+        //     const recipient = window.location.hash.substring(1)
+        //     alert(window.location.hash)
+        // }
     }
 
     componentWillUnmount() {

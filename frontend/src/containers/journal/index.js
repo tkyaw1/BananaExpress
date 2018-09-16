@@ -12,6 +12,8 @@ import BubbleParticles from '../../components/Particles';
 import left_wing from '../../assets/logo_left_half.svg'
 import right_wing from '../../assets/logo_right_half.svg'
 
+import { XYPlot, VerticalBarSeries, HorizontalBarSeries, XAxis, YAxis } from 'react-vis';
+
 var cardColors = ['orange', 'yellow', 'olive', 'teal', 'blue', 'violet', 'purple', 'pink', 'grey']
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -40,6 +42,7 @@ function mapPromptsToCards(prompt, index) {
 class Journal extends Component {
     constructor(props) {
         super(props);
+        
         this.state = {
             hasNewSentence: true,
             prompts: [],
@@ -91,7 +94,6 @@ class Journal extends Component {
         // if (this.state.initialFetch) {
         //     url = '/client/blocks/reset'
         // }
-        console.log('sent prompt fetch!')
 
         const response = await fetch(url);
         const body = await response.json();
@@ -145,13 +147,17 @@ class Journal extends Component {
     };
 
     awaitSentiments = (paragraph) => {
-        this.fetchSentiments()
+        this.fetchSentiments(paragraph)
             .then(res => {
                 console.log('received response!')
                 const sentiments = res.sentiments
-                console.log(sentiments)
+                const parsedSentiments = Object.entries(sentiments);
+                const sentimentsArray = parsedSentiments.map(sentiment => {
+                    return {x: sentiment[1]*100, y: sentiment[0].substring(0, 3)}
+                })
+                console.log(sentimentsArray)
                 this.setState({
-                    sentiments: sentiments
+                    sentiments: sentimentsArray
                 })
             })
             .catch(err => console.log(err));
@@ -159,10 +165,18 @@ class Journal extends Component {
 
     fetchSentiments = async (paragraph) => {
         var url = '/client/sentiments/test'
-
-        console.log('sent prompt fetch!')
-
-        const response = await fetch(url);
+        const request = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                paragraph: paragraph
+            })
+        }
+        const response = await fetch(url, request);
+        console.log('sent sentiment fetch!')
         const body = await response.json();
 
         if (response.status !== 200) throw Error(body.message);
@@ -175,7 +189,7 @@ class Journal extends Component {
             return <Block isTyping={this.handleUserTyping} sentenceReady={this.handleSentence} valueJSON={block} />
         }
         return (
-            <li key={index}><Block isTyping={this.handleUserTyping} sendParagraph={this.handleSentence} sentenceReady={this.handleSentence} valueJSON={block} /></li>
+            <li key={index}><Block isTyping={this.handleUserTyping} sendParagraph={this.awaitSentiments} sentenceReady={this.handleSentence} valueJSON={block} /></li>
         );
     }
 
@@ -241,11 +255,17 @@ class Journal extends Component {
 
 
     render() {
+        
         const isTyping = this.state.isTyping
         const blocks = this.state.blocks
         const journalEntry = blocks ? blocks.map(this.mapJSONToBlock): <Loader className='block-loading' active={true}><Header>Loading your journal...</Header></Loader>
         const prompts = this.state.prompts? this.state.prompts.map(mapPromptsToCards) : ''
         const dashboard = this.state.dashboard
+        const sentimentGraph = this.state.sentiments ? <XYPlot className='sentimentGraph' style={{ strokeWidth: 2 }} xType="linear" yType={'ordinal'} height={300} width={300}>
+            <XAxis title="Sentiments" position="start"/>
+            <YAxis title="Score" position="end"/>
+            <HorizontalBarSeries style={{ strokeWidth: 0.5 }} data={this.state.sentiments} />
+        </XYPlot>: null
         return (
             <div className="App-intro">
                 <Segment className='day-segment'>
@@ -260,10 +280,6 @@ class Journal extends Component {
                         </Grid>
                     </div>
                     <Dashboard {...dashboard}/>
-                    {/* 
-                        <Block /></li>
-                        <li><Block /></li>
-                    </ul> */}
                     <ul>{journalEntry}</ul>
                 </Segment>
                 <Segment hidden={!isTyping} className='suggestions-box'>
@@ -278,6 +294,7 @@ class Journal extends Component {
                     <Header>Prompts</Header>
                     <Divider />
                     {prompts}
+                    {sentimentGraph}
                 </Segment>
             </div>
         );
