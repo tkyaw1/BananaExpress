@@ -4,6 +4,7 @@ import random
 import importlib
 import sys
 import urllib
+import ast
 
 import gCloudStorage
 import im2metadata
@@ -59,6 +60,7 @@ def main():
     # load data from front end
     photo_url = sys.argv[1]
     keyword_dict_str = sys.argv[2]
+    keyword_dict = ast.literal_eval(keyword_dict_str)
 
     photo_name = str(random.randint(0, 99999999)) + ".jpg"
     loc_photo_path = "./fromFrontEnd/" + photo_name
@@ -72,8 +74,7 @@ def main():
     gCloudStorage.upload_blob(bucket_name, loc_photo_path, photo_name)
 
     # localPhotoPath = '../resources/kastanByLake.jpg'
-    date_str, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
-    print("TEST 12 hour string: " + time_12hr_str) # TODO DELETE
+    date_str, date_nl, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
 
     capt = captionImage(photo_gcloud_url)
 
@@ -85,7 +86,7 @@ def main():
     group_bool = gVision.gcloudFaces(loc_photo_path)
 
     d = {}
-    tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
+    tokenizeAndPopulateDict(capt, d, address_nl, date_nl, group_bool)
     for word in labels[:5]:
         tokenizeAndPopulateDict(word, d)
 

@@ -172,32 +172,33 @@ def im2date_time_addr(photoPath):
         hour = datetime_object.hour
     time_12hr_str = (str(hour) + ":" + str(datetime_object.minute) + " " + ampm)
         
+    # ex: 22, Nov 2008'
+    date_nl = datetime_object.strftime('%d, %b %Y')
 
-    return date_str, time_nl, time_12hr_str, address_nl
+    return date_str, date_nl, time_nl, time_12hr_str, address_nl
 
 
-"""
+# """
 if __name__ == "__main__":
 
     image = Image.open("../resources/cloudCity.jpg") 
-    print(pillowImageToAddress(image))
-    exif_data = get_exif_data(image)
-    lat, lon = get_lat_lon(exif_data)
-    address = get_address(lat, lon)
-    date_str, time_nl, time_12hr_str, address_nl = im2date_time_addr("../resources/cloudCity.jpg")
-    print ("date_str: " + date_str)
-    print ("time_12hr_str: " + time_12hr_str)
+    # print(pillowImageToAddress(image))
+    # exif_data = get_exif_data(image)
+    # lat, lon = get_lat_lon(exif_data)
+    # address = get_address(lat, lon)
+    date_str, date_nl, time_nl, time_12hr_str, address_nl = im2date_time_addr("../resources/cloudCity.jpg")
+    # print ("time_12hr_str: " + time_12hr_str)
 
     # GET the TIME
 
-    time_str = exif_data.get('DateTime')
+    # time_str = exif_data.get('DateTime')
     # format: 2018:08:29 18:47:49
     # format: year month day --- hour min sec
-    datetime_object = datetime.strptime('2018:08:29 18:47', '%Y:%m:%d %H:%M')
+    # datetime_object = datetime.strptime('2018:08:29 18:47', '%Y:%m:%d %H:%M')
     # print(datetime_object)
 
-    time_of_day = getTimeOfDay(datetime_object.hour)
-    print("Running " + str(address) + " " + time_of_day)
+    # time_of_day = getTimeOfDay(datetime_object.hour)
+    # print("Running " + str(address) + " " + time_of_day)
     # print (get_lat_lon(exif_data))
 
-"""
+# """
