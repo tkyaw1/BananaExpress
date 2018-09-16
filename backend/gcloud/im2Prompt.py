@@ -47,7 +47,7 @@ class QuestionGeneration(object):
 
 def main():
 
-    localPhotoPath = './resources/groupPhoto.jpg'
+    localPhotoPath = '../resources/groupPhoto.jpg'
     date_str, time_nl, address_nl = im2metadata.im2date_time_addr(localPhotoPath)
     # todo: google clout storage (get url)
 
@@ -59,7 +59,7 @@ def main():
 
 
     d = {}
-    # tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
+    tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
     # for word in labels[:5]:
     #     tokenizeAndPopulateDict(word, d)
 
@@ -99,13 +99,13 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
 def askQs(location=None, activity=None, food=None, group=None):
     qG = QuestionGeneration()
     if location:
-        return qG.askLocationQ("Seattle")
+        return qG.askLocationQ(location)
     elif group:
         return qG.askPeopleQ()
     elif activity:
-        return qG.askActivityQ("activity")
+        return qG.askActivityQ(activity)
     elif food:
-        return qG.askFoodQ("food")
+        return qG.askFoodQ(food)
     else:
         return qG.askGeneralQ()
 

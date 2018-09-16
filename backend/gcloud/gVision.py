@@ -20,11 +20,11 @@ def gcloudLabels(imagePath):
     response = client.label_detection(image=image)
     labels = response.label_annotations
 
-    # print('Labels:')
+    print('Labels:', labels)
     # for label in labels:
     #     print(label.description)
     return labels
-    
+
 
 def gcloudFaces(imagePath):
         # Instantiates a client
@@ -50,7 +50,7 @@ def gcloudFaces(imagePath):
     group = False
     if len(faces) > 1:
         group = True
-    
+
     return group
 
     # print('Face(s):')
@@ -62,6 +62,10 @@ def gcloudFaces(imagePath):
 
 # def gcloudLandmarks():
     #todo
+def main():
+    pass
+    # gcloudLabels(image)
+    # gcloudFaces(image)
 
-gcloudLabels(image)
-gcloudFaces(image)
+if __name__ == "__main__":
+    main()
