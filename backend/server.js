@@ -20,10 +20,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.locals.keyword_dict = {
-    'keyword': [
-        //dates 
-        'test test'
-    ],
+    'swim': {
+        'date': ["20180915", "20180916"],
+        'pos': "verb",
+        'type': "activity"
+    },
+    'running': {
+        'date': ["20180802"],
+        'pos': "verb-ing",
+        'type': "activity"
+    }
 }
 
 app.locals.corpus = {
@@ -81,7 +87,7 @@ app.get('/client/prompts/:id', (req, res) => {
 })
 
 // routes for web app
-app.get('/client/test/:id', (req, res) => {
+app.post('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
 
     const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), app.locals.corpus, req.params.id]);
