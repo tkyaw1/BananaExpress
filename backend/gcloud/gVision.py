@@ -18,11 +18,14 @@ def gcloudLabels(imagePath):
 
     # Performs label detection on the image file
     response = client.label_detection(image=image)
-    labels = response.label_annotations
+    rawLabels = response.label_annotations
 
-    # print('Labels:')
-    # for label in labels:
-    #     print(label.description)
+    labels = []
+    print('Labels:')
+    for label in rawLabels:
+        # print(label.description)
+        labels.append(label.description)
+
     return labels
     
 
