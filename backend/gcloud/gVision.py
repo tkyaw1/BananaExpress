@@ -94,8 +94,8 @@ def gcloudLandmarks(path):
 # def gcloudLandmarks():
     #todo
 def main():
-    gcloudLandmarks('../resources/sadEiffel.jpg')
     pass
+    # gcloudLandmarks('../resources/sadEiffel.jpg')
     # gcloudLabels(image)
     # gcloudFaces(image)
 

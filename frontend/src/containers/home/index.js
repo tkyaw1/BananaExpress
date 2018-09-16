@@ -113,6 +113,15 @@ class Home extends Component {
                     onKeyDown={this.onKeyDown}
                     renderNode={this.renderNode}
                 />
+                <div className="ui center image home_butterfly">
+                    <var className="rotate3d">
+                        <figure className="butterfly">
+                            <img className="wing left" src={left_wing} />
+                            <img className="wing right" src={right_wing} />
+                        </figure>
+                    </var>
+                </div>
+                <Image size='small' id='logo' src={logo} />
                 <Button id='button1' size='massive' color='teal' onClick={this.handleButtonClick} content='Get started!' />
             </div>
         );

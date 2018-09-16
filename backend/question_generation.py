@@ -105,7 +105,9 @@ def main():
             # if date is known
             if len(keyword_dict[keyword]['date']) != 0:
                 date = extract_date_location(keyword_dict[keyword], 'date')
-                questions.append(qqgen.askDateQ(date))
+                # if the verb is in the form of ing
+                if 'VBG' in keyword_dict[keyword]['pos']:
+                    questions.append(qqgen.askDateVerbQ(date, keyword))
 
             # if the verb is in the form of ing
             if 'VBG' in keyword_dict[keyword]['pos']:
