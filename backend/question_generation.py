@@ -54,8 +54,21 @@ def extract_date_location(keyword_entry, date_location):
         if randint(0,9) < 7:
             return keyword_entry[date_location][-1]
         else: # grab a random date in the list
-            return keyword_entry[date_location][randint(0,data_len)]
+            return keyword_entry[date_location][randint(0,data_len-1)]
 
+def extract_comp(keyword_entry):
+    """ Given a keywords entry in the keyword_dict, return either the most recent date/location pair or a random pair
+    """
+    data_len = len(keyword_entry['comp'])
+    # if only one date, return that date
+    if data_len == 1:
+        return keyword_entry['comp'][0]
+    else:
+        # 70% of the time, grab the most recent date
+        if randint(0,9) < 7:
+            return keyword_entry['comp'][-1]
+        else: # grab a random date in the list
+            return keyword_entry['comp'][randint(0,data_len-1)]
 
 def main():
     # take command line arguments and decode them from "{}" to {}
@@ -76,19 +89,38 @@ def main():
     if not keywords: # if watson extract returned an empty list of keywords, use azure to cover the slack
         keywords = azure_extract_keywords(new_text)
 
+    # Question generation!
     for keyword in keywords:
         if keyword in keyword_dict: # the keyword exists in the dictionary already
-            date = extract_date_location(keyword_dict[keyword], 'date')
+            # if the comp date/location pair is known, and the keyword is a verb in the ing form, ask a GREAT comp question
+            if ('verb-ing' in keyword_dict[keyword]['pos']) and (len(keyword_dict[keyword]['comp']) > 0):
+                data, location = extract_comp(keyword_dict[keyword])
+                questions.append(qqgen.askCompActivityQ(keyword, data, location))
 
-            location = extract_date_location(keyword_dict[keyword], 'location')
-            questions.append(qqgen.askLocationQ(location))
-            questions.append(qqgen.askLocationQ(location))
-            questions.append(qqgen.askLocationQ(location))
+            # if location is known:
+            if len(keyword_dict[keyword]['location']) > 0:
+                location = extract_date_location(keyword_dict[keyword], 'location')
+                questions.append(qqgen.askLocationQ(location))
 
-            # if len(keyword_dict['activity']) != 0:
-                # questions.append(qqgen.askActivityQ(keyword_dict['activity']))
+            # if date is known
+            if len(keyword_dict[keyword]['date']) != 0:
+                date = extract_date_location(keyword_dict[keyword], 'date')
+                questions.append(qqgen.askDateQ(date))
 
-    # print keyword_dict['swim']
+            # if the verb is in the form of ing
+            if 'verb-ing' in keyword_dict[keyword]['pos']:
+                questions.append(qqgen.askActivityQ(keyword))
+
+            # if the keyword is a food related word:
+            if keyword_dict[keyword]['type'] == 'restaurant':
+                questions.append(qqgen.askFoodQ(keyword))
+
+    # always return at least 4 questions:
+    while len(questions) < 4:
+        temp = qqgen.askGeneralQ() # generate random question
+        if temp not in questions: # check to see if the question has already been asked
+            questions.append(temp)
+
     for question in questions:
         print(question)
         sys.stdout.flush()
