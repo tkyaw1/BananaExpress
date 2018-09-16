@@ -67,9 +67,32 @@ app.locals.corpus = {
     ]
 }
 
+app.locals.storedDays = [{}]
+
 app.locals.storedBlocks = []
 
 app.locals.dashboards = {
+    '9-11-2018': {
+        'temperature': 75,
+        'steps': 13400,
+        'sleep': '8 hr 30 min',
+        'weather': 'lightning',
+        'mood': 'grinSweat'
+    },
+    '9-12-2018': {
+        'temperature': 81,
+        'steps': 11000,
+        'sleep': '7 hr 45 min',
+        'weather': 'lightning',
+        'mood': 'grinSweat'
+    },
+    '9-13-2018': {
+        'temperature': 60,
+        'steps': 13020,
+        'sleep': '6 hr 30 min',
+        'weather': 'lightning',
+        'mood': 'grinSweat'
+    },
     '9-14-2018': {
         'temperature': 80,
         'steps': 11000,
@@ -79,7 +102,7 @@ app.locals.dashboards = {
     },
     '9-15-2018': {
         'temperature': 75,
-        'steps': 8000,
+        'steps': 8050,
         'sleep': '7 hr 30 min',
         'weather': 'lightning',
         'mood': 'grinSweat'
@@ -163,15 +186,16 @@ app.get('/client/prompts/:id', (req, res) => {
 
 app.post('/client/sentiments/:id', (req, res) => {
     // user sends text, send back list of prompts
-    console.log(req.body.rawText)
-
-    const pythonProcess = spawn('python', ["sentiment_analysis.py", app.locals.keyword_dict, req.body.rawText]);
+    const paragraph = req.body.paragraph
+    console.log('Analyzing Sentiments ', paragraph)
+    const pythonProcess = spawn('python', ["sentiment_analysis.py", paragraph]);
     pythonProcess.stdout.on('data', (data) => {
         // Do something with the data returned from python script
         // var textChunk = data.toString('utf8');
         
         console.log(data.toString())
-        res.send({ prompts: data.toString() });
+        const sentiments = JSON.parse(data.toString())
+        res.send({ sentiments: sentiments });
     });
     let day = 'test'
     let prompts = app.locals.prompts[day]
@@ -232,7 +256,7 @@ app.get('/client/dashboard/:id', (req, res) => {
     // we'll use an id to differentiate entries for different days
     // console.log('received block request!')
 
-    console.log('dashboard', app.locals.dashboards[req.params.id])
+    // console.log('dashboard', app.locals.dashboards[req.params.id])
     res.send({ dashboard: app.locals.dashboards[req.params.id]});
     console.log('sent dashboard back')
 })
