@@ -60,7 +60,7 @@ def main():
     photo_url = sys.argv[1]
     keyword_dict_str = sys.argv[2]
 
-    photo_name = str(random.uniform(0, 9999)) + ".jpg"
+    photo_name = str(random.randint(0, 99999999)) + ".jpg"
     loc_photo_path = "./fromFrontEnd/" + photo_name
     urllib.urlretrieve(photo_url, loc_photo_path )
 
@@ -69,7 +69,7 @@ def main():
 
     # upload to gCloudStorage
     bucket_name = 'project-tao'
-    gCloudStorage.upload_blob(bucket_name, loc_photo_path, loc_photo_path)
+    gCloudStorage.upload_blob(bucket_name, loc_photo_path, photo_name)
 
     # localPhotoPath = '../resources/kastanByLake.jpg'
     date_str, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
