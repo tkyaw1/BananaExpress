@@ -58,10 +58,12 @@ class QuestionGeneration(object):
 # {'type': 'imagePrompt', 'data': imagePrompt},
 def main():
     # load data from front end
-    photo_url = sys.argv[1]
-    # photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
-    keyword_dict_str = sys.argv[2]
-    keyword_dict = ast.literal_eval(keyword_dict_str)
+    # photo_url = sys.argv[1]
+    photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
+    # keyword_dict_str = sys.argv[2]
+    # keyword_dict = ast.literal_eval(keyword_dict_str)
+    keyword_dict = {"surfing":{"date":["Aug-15-2018","Sep-16-2018"],"pos":"VBG","location":["Malibu","Hawaii"],"type":"activity","comp":[["Aug-15-2018","Malibu"],["Sep-16-2018","Hawaii"]]},"running":{"date":["Aug-02-2018"],"pos":"VBG","location":["Swarthmore"],"type":"activity","comp":[["Aug-02-2018","Swarthmore"]]},"Malibu":{"date":["Aug-15-2018"],"pos":"NN","location":["Malibu"],"type":"location","comp":[["Aug-15-2018","Malibu"]]},"Swarthmore":{"date":["Aug-02-2018"],"pos":"NN","location":["Swarthmore"],"type":"location","comp":[["Aug-02-2018","Swarthmore"]]},"Hawaii":{"date":["Sep-16-2018"],"pos":"NN","location":["Hawaii"],"type":"location","comp":[["Sep-16-2018","Hawaii"]]}}
+    # print "YAYYY", type(keyword_dict)
 
     photo_name = str(random.randint(0, 99999999)) + ".jpg"
     loc_photo_path = "./fromFrontEnd/" + photo_name
@@ -87,7 +89,7 @@ def main():
     capt = captionImage(photo_gcloud_url)
 
     tagged = tokenizeAndTag(capt)
-    populateDict(tagged, keyword_dict_str, address_nl, date_nl, group_bool)
+    populateDict(tagged, keyword_dict, address_nl, date_nl, group_bool)
 
 
     for word in tagged:
@@ -112,9 +114,10 @@ def captionImage(url):
 def tokenizeAndTag(sentence):
     tokens = nltk.word_tokenize(sentence)
     tagged = nltk.pos_tag(tokens)
+    print("tagged", tagged)
     return tagged
 
-def populateDict(tagged, dict, location, date, type):
+def populateDict(tagged, keywords, location, date, blockType):
     activity = None
     for word in tagged:
         keyword = word[0]
@@ -124,16 +127,16 @@ def populateDict(tagged, dict, location, date, type):
         locationAndDate=None
         if location != None and date != None:
             locationAndDate = [date, location]
-        if keyword not in dict:
-            dict[keyword] = {"location": [location],
-                            "pos": pos,
-                            "date": [date],
-                            "type": type,
-                            "comp": locationAndDate}
+        if keyword not in keywords:
+            keywords[keyword] = {"location": [location],
+                                "pos": pos,
+                                "date": [date],
+                                "type": blockType,
+                                "comp": locationAndDate
+                                }
         else:
-            dict[keyword]["location"].append(location)
-            dict[keyword]["date"].append(date)
-
+            keywords[keyword]["location"].append(location)
+            keywords[keyword]["date"].append(date)
 
     group = None
     food = None
