@@ -20,17 +20,40 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.locals.keyword_dict = {
-    'swim': {
-        'date': ["20180915", "20180916"],
-        'pos': "verb",
+    'surfing': {
+        'date': ["Aug-15-2018", "Sep-16-2018"],
+        'pos': "verb-ing",
         'location': ['Malibu', 'Hawaii'],
-        'type': "activity"
+        'type': "activity",
+        'comp': [["Aug-15-2018",'Malibu'], ["Sep-16-2018", "Hawaii"]]
     },
     'running': {
-        'date': ["20180802"],
+        'date': ["Aug-02-2018"],
         'pos': "verb-ing",
         'location':['Swarthmore'],
-        'type': "activity"
+        'type': "activity",
+        'comp': [["Aug-02-2018", "Swarthmore"]]
+    },
+    'Malibu': {
+        'date': ["Aug-15-2018"],
+        'pos': "noun",
+        'location' : ['Malibu'],
+        'type': 'location',
+        'comp': [["Aug-15-2018", "Malibu"]]
+    },
+    'Swarthmore': {
+        'date': ['Aug-02-2018'],
+        'pos': 'noun',
+        'location': ['Swarthmore'],
+        'type': 'location',
+        'comp': [["Aug-02-2018", "Swarthmore"]]
+    },
+    'Hawaii': {
+        'date': ['Sep-16-2018'],
+        'pos': 'noun',
+        'location' : ['Hawaii'],
+        'type': 'location',
+        'comp':[["Sep-16-2018", "Hawaii"]]
     }
 }
 
@@ -109,7 +132,7 @@ app.get('/client/prompts/:id', (req, res) => {
     if (req.params.id == 'reset') {
         console.log('resetting prompts!!')
         app.locals.prompts = ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
-        
+
     }
     let prompts = app.locals.prompts
     console.log(prompts)
@@ -117,10 +140,10 @@ app.get('/client/prompts/:id', (req, res) => {
 })
 
 // routes for web app
-app.post('/client/text/:id', (req, res) => {
+app.get('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
     console.log(req.body.newSentence)
-    const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.body.newSentence]);
+    const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.params.id]);
     let day = 'test'
     var newPrompts = app.locals.prompts
     pythonProcess.stdout.on('data', (data) => {
