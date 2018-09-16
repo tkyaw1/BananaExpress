@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
-from PIL import Image 
-from PIL.ExifTags import TAGS, GPSTAGS 
+from PIL import Image
+from PIL.ExifTags import TAGS, GPSTAGS
 
 """
 PURPOSE: Get photo metadata, convert coords to real location, //push to google storage
@@ -52,9 +52,9 @@ def get_exif_data(image):
 def _get_if_exist(data, key):
     if key in data:
         return data[key]
-		
+
     return None
-	
+
 def _convert_to_degress(value):
     """Helper function to convert the GPS coordinates stored in the EXIF to degress in float format"""
     d0 = value[0][0]
@@ -76,7 +76,7 @@ def get_lat_lon(exif_data):
     lat = None
     lon = None
 
-    if "GPSInfo" in exif_data:		
+    if "GPSInfo" in exif_data:
         gps_info = exif_data["GPSInfo"]
 
         gps_latitude = _get_if_exist(gps_info, "GPSLatitude")
@@ -86,7 +86,7 @@ def get_lat_lon(exif_data):
 
         if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
             lat = _convert_to_degress(gps_latitude)
-            if gps_latitude_ref != "N":                     
+            if gps_latitude_ref != "N":
                 lat = 0 - lat
 
             lon = _convert_to_degress(gps_longitude)
@@ -112,7 +112,7 @@ class FancyDateTimeDelta(object):
         self.month = delta.days / 30 - (12 * self.year)
         if self.year > 0:
             self.day = 0
-        else: 
+        else:
             self.day = delta.days % 30
         self.hour = delta.seconds / 3600
         self.minute = delta.seconds / 60 - (60 * self.hour)
@@ -158,10 +158,10 @@ def im2date_time_addr(photoPath):
     # GET THE TIME
     date_str = exif_data.get('DateTime')
     # format: 2018:08:29 18:47:49
-    datetime_object = datetime.strptime(date_str, '%Y:%m:%d %H:%M')
+    datetime_object = datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
     # print(datetime_object)
     time_nl = getTimeOfDay(datetime_object.hour)
-    
+
     return date_str, time_nl, address_nl
 
 

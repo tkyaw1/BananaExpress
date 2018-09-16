@@ -20,17 +20,31 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.locals.keyword_dict = {
-    'keyword': [
-        //dates 
-    ],
+    'swim': {
+        'date': ["20180915", "20180916"],
+        'pos': "verb",
+        'type': "activity"
+    },
+    'running': {
+        'date': ["20180802"],
+        'pos': "verb-ing",
+        'type': "activity"
+    }
 }
 
 app.locals.corpus = {
     'corpus': [
+        'test',
+        'test'
         //list of all the text
         // ['block's text', 'block's text']
-
     ]
+}
+
+app.locals.hasNewBlocks = true
+
+app.locals.prompts = {
+    'test': ['What was your favorite thing about today?', 'What did you accomplish today?', 'What were you grateful for today?']
 }
 
 // i pass keyword_dict, corpus, current_text at once to Henry/python
@@ -59,13 +73,29 @@ app.get('/mobile/location/:id', (req, res) => {
 })
 
 // routes for web app
-app.get('/client/text/:id', (req, res) => {
+app.get('/client/prompts/:id', (req, res) => {
     // user sends text, send back list of prompts
-    const pythonProcess = spawn('python', ["question_generation.py", app.locals.keyword_dict, app.locals.corpus, req.params.id]);
+    // const pythonProcess = spawn('python', ["question_generation.py", app.locals.keyword_dict, app.locals.corpus, req.params.id]);
+    // pythonProcess.stdout.on('data', (data) => {
+    //     // Do something with the data returned from python script
+    //     var textChunk = data.toString('utf8');
+    //     console.log(textChunk)
+    // });
+    let day = 'test'
+    let prompts = app.locals.prompts[day]
+    res.send({ prompts: prompts});
+})
+
+// routes for web app
+app.post('/client/text/:id', (req, res) => {
+    // user sends text, send back list of prompts
+
+    const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), app.locals.corpus, req.params.id]);
     pythonProcess.stdout.on('data', (data) => {
         // Do something with the data returned from python script
+        // var temp = JSON.parse(data.toString());
+        console.log(data.toString());
         var textChunk = data.toString('utf8');
-        console.log(textChunk)
         res.send({ prompts: [textChunk] });
     });
 })
@@ -73,10 +103,17 @@ app.get('/client/text/:id', (req, res) => {
 app.get('/client/blocks/:id', (req, res) => {
     // user sends hello ping, server sends back a block if there is data available
     // we'll use an id to differentiate entries for different days
-    console.log('received block request!')
-    console.log(req.params.id)
-    res.send({blocks: [createJsonBlock()]});
-    console.log('sent block back')
+    // console.log('received block request!')
+    if (req.params.id == 'reset') {
+        app.locals.hasNewBlocks = true
+    }
+    const hasNewBlocks = app.locals.hasNewBlocks
+    app.locals.hasNewBlocks = false
+    // console.log(hasNewBlocks)
+    if (hasNewBlocks) {
+        res.send({ blocks: [createJsonBlock()], hasNewBlocks: hasNewBlocks });
+        console.log('sent block back')
+    }
 })
 
 app.get('/client/fitbit/:id', (req, res) => {
@@ -122,18 +159,32 @@ function createJsonBlock(type) {
                 }, 
                 {
                     "object": "block",
-                    "type": 'timestamp',
+                    "type": "paragraph",
                     "nodes": [
                         {
                             "object": "text",
                             "leaves": [
                                 {
-                                    "text": 'timestamp'
+                                    "text": "Start typing here and more prompts will magically pop up!"
                                 }
                             ]
                         }
                     ]
-                }, 
+                },
+                {
+                    "object": "block",
+                    "type": "paragraph",
+                    "nodes": [
+                        {
+                            "object": "text",
+                            "leaves": [
+                                {
+                                    "text": "Try it out for yourself!"
+                                }
+                            ]
+                        }
+                    ]
+                }
             ]
         }
     } 
