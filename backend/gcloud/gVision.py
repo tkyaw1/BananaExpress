@@ -1,38 +1,44 @@
 import io
 import os
-
-# Imports the Google Cloud client library
 from google.cloud import vision
 from google.cloud.vision import types
 
-# Instantiates a client
-client = vision.ImageAnnotatorClient()
+def gcloudLabels(imagePath):
+    # Instantiates a client
+    client = vision.ImageAnnotatorClient()
 
-# .from_service_account_json(
-        # 'ProjectTao-782142094f75.json')
+    file_name = os.path.join(
+        os.path.dirname(__file__), imagePath)
 
-# The name of the image file to annotate
-file_name = os.path.join(
-    os.path.dirname(__file__),
-    '../resources/groupPhoto.jpg')
+    # Loads the image into memory
+    with io.open(file_name, 'rb') as image_file:
+        content = image_file.read()
 
-# Loads the image into memory
-with io.open(file_name, 'rb') as image_file:
-    content = image_file.read()
+    image = vision.types.Image(content=content)
 
-image = vision.types.Image(content=content)
-
-def gcloudLabels(image):
     # Performs label detection on the image file
     response = client.label_detection(image=image)
     labels = response.label_annotations
 
-    print('Labels:')
-    for label in labels:
-        print(label.description)
+    # print('Labels:')
+    # for label in labels:
+    #     print(label.description)
+    return labels
     
 
-def gcloudFaces(image):
+def gcloudFaces(imagePath):
+        # Instantiates a client
+    client = vision.ImageAnnotatorClient()
+
+    file_name = os.path.join(
+        os.path.dirname(__file__), imagePath)
+
+    # Loads the image into memory
+    with io.open(file_name, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.types.Image(content=content)
+
     # Perform face detecion
     response = client.face_detection(image=image)
     faces = response.face_annotations
@@ -44,6 +50,8 @@ def gcloudFaces(image):
     group = False
     if len(faces) > 1:
         group = True
+    
+    return group
 
     # print('Face(s):')
     # for face in faces:

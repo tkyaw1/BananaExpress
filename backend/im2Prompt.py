@@ -1,6 +1,12 @@
 from captionbot import CaptionBot
 import nltk
 import random
+import importlib
+
+im2metadata = input('./gcloud/im2metadata.py')
+gVision = input('./gcloud/gVision.py')
+importlib.import_module(im2metadata )
+importlib.import_module(gVision )
 
 class QuestionGeneration(object):
     def __init__(self):
@@ -40,14 +46,13 @@ def main():
     capt = captionImage("https://www.rawstory.com/wp-content/uploads/2015/05/A-man-surfing-Shutterstock.jpg")
     print("captioinnnn:", capt)
 
-    date, time_nl, address = imgToAddress()
-    # google clout storage (get url)
-    # captionize
-    Labels
-    gcloudFaces
+    localPhotoPath = './resources/groupPhoto.jpg'
+    date_str, time_nl, address_nl = im2metadata.im2date_time_addr(localPhotoPath)
+    # todo: google clout storage (get url)
+    # todo: captionize
+    labels_list = gVision.gcloudLabels(localPhotoPath)
+    group = gVision.gcloudFaces(localPhotoPath)
 
-    # KASTAN'S SHIZ
-    labels = []
 
     d = {}
     tokenizeAndPopulateDict(capt, d, "Seattle", "Thursday", "group")
