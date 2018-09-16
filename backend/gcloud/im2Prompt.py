@@ -57,12 +57,12 @@ class QuestionGeneration(object):
 # {'type': 'imagePrompt', 'data': imagePrompt},
 def main():
     # load data from front end
-    # photo_url = sys.argv[1]
-    photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
-    # keyword_dict_str = sys.argv[2]
+    photo_url = sys.argv[1]
+    # photo_url = "https://storage.googleapis.com/project-tao/kastanByLake.jpg"
+    keyword_dict_str = sys.argv[2]
 
 
-    photo_name = str(random.uniform(0, 9999)) + ".jpg"
+    photo_name = str(random.randint(0, 9999999)) + ".jpg"
     loc_photo_path = "./fromFrontEnd/" + photo_name
     urllib.urlretrieve(photo_url, loc_photo_path )
 
@@ -71,47 +71,52 @@ def main():
 
     # upload to gCloudStorage
     bucket_name = 'project-tao'
-    gCloudStorage.upload_blob(bucket_name, loc_photo_path, loc_photo_path)
+    gCloudStorage.upload_blob(bucket_name, loc_photo_path, photo_name)
 
     # localPhotoPath = '../resources/kastanByLake.jpg'
     date_str, time_nl, time_12hr_str, address_nl = im2metadata.im2date_time_addr(loc_photo_path)
-    print("TEST 12 hour string: " + time_12hr_str) # TODO DELETE
-
-    capt = captionImage(photo_gcloud_url)
 
     print("{'type': 'timestamp', 'data':" + time_12hr_str + "}, ")
-    print("{'type': 'caption', 'data':" + capt + "}, ")
     print("{'type': 'image', 'data':" + photo_gcloud_url + "}, ")
-
 
     labels_list = gVision.gcloudLabels(loc_photo_path)
     group_bool = gVision.gcloudFaces(loc_photo_path)
+    capt = captionImage(photo_gcloud_url)
 
-    d = {}
-    tokenizeAndPopulateDict(capt, d, address_nl, date_str, group_bool)
-    for word in labels_list[:5]:
-        tokenizeAndPopulateDict(word, d, address_nl, date_str, group_bool)
+    tagged = tokenizeAndTag(capt)
+    populateDict(tagged, keyword_dict_str, address_nl, date_str, group_bool)
 
+    for word in tagged:
+        keyword = word[0]
+        pos = word[1]
+        if pos == 'VBG':
+            capt = keyword + " " + address_nl + " " + time_nl
+
+    print("{'type': 'caption', 'data':" + capt + "}, ")
 
 def captionImage(url):
     image_url = url
     cBot = CaptionBot()
     caption = cBot.url_caption(image_url)
-    # caption = cBot.file_caption(filePath)
     caption = caption.split(" ")[2:]
     caption = " ".join(caption)
     return caption
 
 # types of blocks:
 # timestamp, caption, image, imagePrompt (fitbit, location)
-def tokenizeAndPopulateDict(sentence, dict, location, date, type):
+
+def tokenizeAndTag(sentence):
     tokens = nltk.word_tokenize(sentence)
     tagged = nltk.pos_tag(tokens)
-    print("tagged", tagged)
+    return tagged
+
+def populateDict(tagged, dict, location, date, type):
+    activity = None
     for word in tagged:
         keyword = word[0]
         pos = word[1]
-        
+        if pos == 'VBG' or pos == 'VB':
+            activity = True
         locationAndDate=None
         if location != None and date != None:
             locationAndDate = [location, date]
@@ -122,7 +127,6 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
                         "locationAndDate": locationAndDate}
 
     group = None
-    activity = None
     food = None
     if type == "Group":
         group = True
@@ -130,20 +134,21 @@ def tokenizeAndPopulateDict(sentence, dict, location, date, type):
         activity = True
     elif type == "Food":
         food = True
-    askQs(location, activity, food, group)
+    imagePrompt = askQs(location, activity, food, group)
+    print("{'type': 'imagePrompt', 'data': %s}" %imagePrompt)
     sys.stdout.flush()
 
 def askQs(location=None, activity=None, food=None, group=None):
     qG = questions.QuestionGeneration()
     if location:
-        print({'type': 'imagePrompt', 'data': qG.askLocationQ(location)})
+        return qG.askLocationQ(location)
     elif group:
-        print({'type': 'imagePrompt', 'data': qG.askPeopleQ()})
+        return qG.askPeopleQ()
     elif activity:
-        print({'type': 'imagePrompt', 'data': qG.askActivityQ(activity)})
+        return qG.askActivityQ(activity)
     elif food:
-        print({'type': 'imagePrompt', 'data': qG.askFoodQ(food)})
+        return qG.askFoodQ(food)
     else:
-        print({'type': 'imagePrompt', 'data': qG.askGeneralQ()})
+        return qG.askGeneralQ()
 
 main()

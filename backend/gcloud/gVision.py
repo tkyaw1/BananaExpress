@@ -21,7 +21,7 @@ def gcloudLabels(imagePath):
     rawLabels = response.label_annotations
 
     labels = []
-    print('Labels:')
+    # print('Labels:')
     for label in rawLabels:
         # print(label.description):w
 

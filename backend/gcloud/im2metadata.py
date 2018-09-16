@@ -18,7 +18,7 @@ def get_address(lat, lon):
     base_url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='
     url = base_url + str(lat) + ',' + str(lon)
     url = url + '&key=' + API_KEY
-    print(url)
+    # print(url)
 
     response = requests.get(url=url)
     data = response.json()
@@ -163,9 +163,11 @@ def im2date_time_addr(photoPath):
     time_nl = getTimeOfDay(datetime_object.hour)
     if(datetime_object.hour >=12 ):
         ampm = "PM"
+        hour = datetime_object.hour - 12
     else:
         ampm = "AM"
-    time_12hr_str = (str(datetime_object.hour) + ":" + str(datetime_object.minute) + " " + ampm)
+        hour = datetime_object.hour
+    time_12hr_str = (str(hour) + ":" + str(datetime_object.minute) + " " + ampm)
 
 
     return date_str, time_nl, time_12hr_str, address_nl
