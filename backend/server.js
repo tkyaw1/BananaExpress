@@ -150,7 +150,7 @@ app.get('/client/prompts/:id', (req, res) => {
 })
 
 // routes for web app
-app.get('/client/text/:id', (req, res) => {
+app.post('/client/text/:id', (req, res) => {
     // user sends text, send back list of prompts
     console.log(req.body.newSentence)
     const pythonProcess = spawn('python', ["question_generation.py", JSON.stringify(app.locals.keyword_dict), JSON.stringify(app.locals.corpus), req.body.newSentence]);
