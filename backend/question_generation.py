@@ -101,12 +101,12 @@ def main():
             if len(keyword_dict[keyword]['location']) > 0:
                 location = extract_date_location(keyword_dict[keyword], 'location')
                 questions.append(qqgen.askLocationQ(location))
-    #
-    #         # if date is known
-    #         if len(keyword_dict[keyword]['date']) != 0:
-    #             date = extract_date_location(keyword_dict[keyword], 'date')
-    #             questions.append(qqgen.askDateQ(date))
-    #
+
+            # if date is known
+            if len(keyword_dict[keyword]['date']) != 0:
+                date = extract_date_location(keyword_dict[keyword], 'date')
+                questions.append(qqgen.askDateQ(date))
+
             # if the verb is in the form of ing
             if 'verb-ing' in keyword_dict[keyword]['pos']:
                 questions.append(qqgen.askActivityQ(keyword))
@@ -115,8 +115,8 @@ def main():
             if keyword_dict[keyword]['type'] == 'restaurant':
                 questions.append(qqgen.askFoodQ(keyword))
 
-    # always return at least 5 questions:
-    while len(questions) < 6:
+    # always return at least 4 questions:
+    while len(questions) < 4:
         temp = qqgen.askGeneralQ() # generate random question
         if temp not in questions: # check to see if the question has already been asked
             questions.append(temp)

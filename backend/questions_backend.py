@@ -18,7 +18,7 @@ class QuestionGeneration(object):
     def askLocationQ(self, location):
         return random.choice(["What did you do in %s?" %location,
         "Why did you go to %s?" %location,
-        "What did you eat in %s?" %location,
+        "What did you eat in %s while you were there?" %location,
         "Who did you meet in %s?" %location,
         "First time in %s?" %location,
         "Have you ever been to %s before?" %location])
@@ -31,6 +31,9 @@ class QuestionGeneration(object):
     def askFoodQ(self, food):
         return random.choice(["How was your meal?",
         "Have a good meal?", "Would you get the same meal again?"])
+
+    def askDateVerbQ(self, date):
+        return random.choice([""])
 
     def askPeopleQ(self):
         return random.choice(["With friends?",
